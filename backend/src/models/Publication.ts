@@ -4,7 +4,7 @@ import { IUser } from './User';
 export interface IPublication extends Document {
   pubType: string;
   title: string;
-  researcher: Schema.Types.ObjectId | IUser;
+  user: Schema.Types.ObjectId | IUser;
   score: number;
   complete: boolean;
 }
@@ -16,9 +16,9 @@ const baseOptions = {
 };
 
 const publicationSchema = new Schema<IPublication>({
-  researcher: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   title: { type: String, required: true },
-  score: { type: Number, required: true },
+  score: { type: Number, required: true, default: 0 },
   complete: { type: Boolean, required: true, default: false }
 }, baseOptions);
 

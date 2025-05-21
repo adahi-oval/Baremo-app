@@ -1,4 +1,4 @@
-import { Schema, model, Document } from 'mongoose';
+import { Schema, model, Document, Model } from 'mongoose';
 import bcrypt from 'bcrypt';
 
 export interface IUser extends Document {
@@ -7,7 +7,13 @@ export interface IUser extends Document {
   researcherId: number;
   email: string;
   password: string;
+  institutes?: string[];
   comparePassword(password: string): Promise<boolean>;
+}
+
+// Se extiende la interfaz de Model<IUser> para poder mantener los métodos mongoose
+export interface IUserMethods extends Model<IUser> {
+  findByUsername(username: string): Promise<IUser | null>;
 }
 
 const userSchema = new Schema<IUser>({
@@ -16,9 +22,14 @@ const userSchema = new Schema<IUser>({
   researcherId: { type: Number, required: true, unique: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  institutes: { type: [String], default: [], maxlength: 2 }
 }, {
   timestamps: true
 });
+
+userSchema.statics.findByUsername = async function (username: string): Promise<IUser | null> {
+  return this.findOne({ username: username }).select("-_id username fullname researcherId email institutes").exec();
+};
 
 userSchema.pre<IUser>('save', async function (next) {
   if (!this.isModified('password')) return next();
@@ -32,4 +43,4 @@ userSchema.methods.comparePassword = async function (candidatePassword: string):
   return bcrypt.compare(candidatePassword, this.password);
 };
 
-export const User = model<IUser>('User', userSchema);
+export const User = model<IUser, IUserMethods>('User', userSchema);
