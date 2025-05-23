@@ -3,6 +3,7 @@ import cors from 'cors';
 import authRouter from './routes/auth';
 import testRouter from './routes/test';
 import userRouter from './routes/user';
+import meritRouter from './routes/merits';
 
 const app = express();
 
@@ -16,5 +17,6 @@ app.get('/', (req, res) => {
 app.use(authRouter);
 app.use(testRouter);
 app.use(userRouter);
+app.use(meritRouter)
 
 export default app;
