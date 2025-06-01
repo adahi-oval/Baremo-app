@@ -14,6 +14,7 @@ export interface IUser extends Document {
 // Se extiende la interfaz de Model<IUser> para poder mantener los métodos mongoose
 export interface IUserMethods extends Model<IUser> {
   findByUsername(username: string): Promise<IUser | null>;
+  findByUsernameAll(username: string): Promise<IUser | null>;
 }
 
 const userSchema = new Schema<IUser>({
@@ -29,6 +30,10 @@ const userSchema = new Schema<IUser>({
 
 userSchema.statics.findByUsername = async function (username: string): Promise<IUser | null> {
   return this.findOne({ username: username }).select("-_id username fullname researcherId email institutes").exec();
+};
+
+userSchema.statics.findByUsernameAll = async function (username: string): Promise<IUser | null> {
+  return this.findOne({ username: username }).exec();
 };
 
 userSchema.pre<IUser>('save', async function (next) {

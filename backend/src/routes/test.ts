@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { User } from "../models/User";
-import { Award } from "../models/publications/Award";
+import { Award } from "../models/merits/Award";
 
 const testRouter = Router();
 

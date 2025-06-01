@@ -1,19 +1,19 @@
-import { Award } from "../models/publications/Award";
-import { Article } from "../models/publications/Article";
-import { Book } from "../models/publications/Book";
-import { Conference } from "../models/publications/Conference";
-import { Contract } from "../models/publications/Contract";
-import { Project } from "../models/publications/Project";
-import { Thesis } from "../models/publications/Thesis";
-import { Sexenio } from "../models/publications/Sexenio";
+import { Award } from "../models/merits/Award";
+import { Article } from "../models/merits/Article";
+import { Book } from "../models/merits/Book";
+import { Conference } from "../models/merits/Conference";
+import { Contract } from "../models/merits/Contract";
+import { Project } from "../models/merits/Project";
+import { Thesis } from "../models/merits/Thesis";
+import { Sexenio } from "../models/merits/Sexenio";
 import { MeritData, MeritTypes } from "./meritCreator";
 
-export const scoreCalculator = (data: MeritData): number => {
+export const scoreCalculator = (data: MeritData): number | undefined => {
     const meritType = data.type as MeritTypes;
 
     switch (meritType) {
         case MeritTypes.Sexenio:
-            if (data.active == null || data.active == undefined) { throw new Error("Active flag missing") }
+            if (data.active == null || data.active == undefined) { return undefined; }
 
                 if (data.active == true) {
                     return 7;
@@ -24,7 +24,7 @@ export const scoreCalculator = (data: MeritData): number => {
 
         case MeritTypes.Award:
             let awardScore = 0;
-            if(!data.awardType) { throw new Error("Award Type missing") }
+            if(!data.awardType) { return undefined; }
 
             if (data.awardType === "international") {
                 awardScore = 2;
@@ -43,7 +43,7 @@ export const scoreCalculator = (data: MeritData): number => {
         
         case MeritTypes.Article:
             const articlePosition = data.position as string;
-            if(!data.index || !articlePosition) { throw new Error("Index and Position are required") }
+            if(!data.index || !articlePosition) { return undefined; }
 
             if (data.index != "No Indexado") {
                 switch(articlePosition.toLowerCase()) {
@@ -72,10 +72,10 @@ export const scoreCalculator = (data: MeritData): number => {
 
         case MeritTypes.Book:
             const bookPosition = data.publisherPosition as string;
-            if(!bookPosition) { throw new Error("Position is required") }
+            if(!bookPosition) { return undefined; }
 
             const bookType = data.bookType as string;
-            if(!bookType) { throw new Error("Book Type is required") }
+            if(!bookType) { return undefined; }
 
             let isBook: boolean;
             if (bookType == "Libro") {
@@ -83,7 +83,7 @@ export const scoreCalculator = (data: MeritData): number => {
             } else if (bookType == "Capitulo") {
                 isBook = false;
             } else {
-                throw new Error("Invalid Book Type")
+                return undefined;
             }
         
             switch(bookPosition.toLowerCase()) {
@@ -106,10 +106,10 @@ export const scoreCalculator = (data: MeritData): number => {
 
         case MeritTypes.Conference:
             const conferenceType = data.conferenceType as string;
-            if(!conferenceType) { throw new Error("Conference Type is required") }
+            if(!conferenceType) { return undefined; }
 
             const contributionType = data.contributionType as string;
-            if(!contributionType) { throw new Error("Contribution Type is required") }
+            if(!contributionType) { return undefined; }
 
             let isNational: boolean;
             if (conferenceType == "international") {
@@ -139,10 +139,10 @@ export const scoreCalculator = (data: MeritData): number => {
              
         case MeritTypes.Project:
             const projectType = data.projectType as string;
-            if(!projectType) { throw new Error("Project Type is required") }
+            if(!projectType) { return undefined; }
 
             const projectRole = data.role as string;
-            if(!projectRole) { throw new Error("Project Role is required") }
+            if(!projectRole) { return undefined; }
 
             let isCoIP: boolean;
             if (projectRole == "(co)ip") {
@@ -150,7 +150,7 @@ export const scoreCalculator = (data: MeritData): number => {
             } else if (projectRole == "member") {
                 isCoIP = false;
             } else {
-                throw new Error("Invalid Project Role")
+                return undefined;
             }
 
             switch(projectType.toLowerCase()) {
@@ -168,6 +168,74 @@ export const scoreCalculator = (data: MeritData): number => {
 
                 default:
                     return 0;
+            }
+
+        case MeritTypes.Contract:
+            const role = data.role as string;
+            if(!role) { return undefined; }
+
+            switch(role.toLowerCase()) {
+                case "coordinator":
+                    return 2;
+
+                case "member":
+                    return 1;
+
+                case "n/a":
+                    return 0;
+
+                default: 
+                    return 0;
+            }
+
+        case MeritTypes.Thesis:
+            const thesisType = data.thesisType as string;
+
+            switch(thesisType.toLowerCase()) {
+                case "industrial codirection":
+                    return 1.5;
+                
+                case "international mention":
+                    return 2;
+
+                case "fpu/fpi o similar":
+                    return 3;
+                
+                case "other":
+                    return 1;
+
+                case "n/a":
+                    return 0;
+
+                default:
+                    return 0;
+            }
+
+        case MeritTypes.Transference:
+            const transferenceType = data.transferenceType as string;
+
+            switch(transferenceType.toLowerCase()) {
+                case "patente en explotacion de la ull":
+                    return 5;
+
+                case "patente en explotacion con otra entidad vinculada":
+                    return 3;
+
+                case "patente no explotada por la ull":
+                    return 1;
+
+                case "empresa spin-off ull":
+                    return 3;
+                
+                case "elaboracion de informes":
+                    return 1;
+
+                case "propiedad intelectual":
+                    return 1;
+
+                case "convenios de colaboracion":
+                    return 1;
+
             }
         
         default:

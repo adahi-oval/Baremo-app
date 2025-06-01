@@ -1,12 +1,13 @@
 import { Router } from "express";
 import { Publication } from "../models/Publication";
+import { meritCreator } from "../services/meritCreator";
 
 const meritRouter = Router();
 
 // GETTERS
 
 // GET /merit/:id
-// Returns the info of a given merit
+// Devuelve la info de un merito concreto
 meritRouter.get("/merit/:id", async (req, res) => {
     try {
         const id = req.params.id;
@@ -29,11 +30,33 @@ meritRouter.get("/merit/:id", async (req, res) => {
             res.status(400).json({ error: "Unknown error" });
         }
     }
-})
+});
+
+// GET /merit/complete
+// Devuelve los meritos con el flag de completos
+meritRouter.get("/merit/status/complete", async (req, res) => {
+    try {
+        const completeMerits = await Publication.find({ complete: true });
+
+        if (!completeMerits || completeMerits.length === 0) {
+            return res.status(404).json({ error: "No complete merits found" });
+        }
+
+        res.status(200).json({ merits: completeMerits })
+
+    } catch (err) {
+        if (err instanceof Error) {
+            res.status(400).json({ error: err.message });
+        } else {
+            res.status(400).json({ error: "Unknown error" });
+        }
+    }
+});
 
 // POSTS
+
 // POST /merit
-// Creates a new merit
+// Crea un nuevo merito
 meritRouter.post("/merit", async (req, res) => {
     try {
         const data = req.body.merit;
@@ -42,15 +65,23 @@ meritRouter.post("/merit", async (req, res) => {
             return res.status(400).json({ error: "Merit type is required" });
         }
 
-        
+        const created = await meritCreator(data);
+
+        if (created === true) {
+            res.status(201).json({ message: `${type} created succesfully` })
+        } else if (created === false) {
+            res.status(201).json({ message: `${type} created with missing types` })
+        } else {
+            res.status(400).json({ message: `${type} failed to be created` })
+        }
+
     } catch (error) {
         if (error instanceof Error) {
             res.status(400).json({ error: error.message });
         } else {
             res.status(400).json({ error: "Unknown error" });
         }
-        
     }
-})
+});
 
 export default meritRouter;
