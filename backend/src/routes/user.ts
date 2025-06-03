@@ -5,17 +5,17 @@ const userRouter = Router();
 
 // GETTERS
 
-// GET /user/:username
-// Returns the user with the given username
-userRouter.get("/user/:username", async (req, res) => {
+// GET /user/:researcherId
+// Returns the user with the given researcherId
+userRouter.get("/user/:researcherId", async (req, res) => {
     try {
-        const username = req.params.username;
+        const researcherId = req.params.researcherId;
 
-        if (!username) {
-            return res.status(400).json({ error: "Username is required" });
+        if (!researcherId) {
+            return res.status(400).json({ error: "Researcher ID is required" });
         }
         
-        const user = await User.findByUsername(username);
+        const user = await User.findOne({researcherId});
 
         if (!user) {
             return res.status(404).json({ error: "User not found" });
@@ -76,15 +76,15 @@ userRouter.post("/user", async (req, res) => {
 
 // DELETE /user/:username
 // Deletes the user with the given username
-userRouter.delete("/user/:username", async (req, res) => {
+userRouter.delete("/user/:researcherId", async (req, res) => {
     try {
-        const username = req.params.username;
+        const researcherId = req.params.researcherId;
 
-        if (!username) {
-            return res.status(400).json({ error: "Username is required"});
+        if (!researcherId) {
+            return res.status(400).json({ error: "Researcher ID is required"});
         }
 
-        const user = await User.findOneAndDelete({ username });
+        const user = await User.findOneAndDelete({ researcherId });
 
         if (!user) {
             return res.status(404).json({ error: "User not found" });
@@ -103,18 +103,18 @@ userRouter.delete("/user/:username", async (req, res) => {
 
 // PUTS
 
-// PUT /user/:username
-// Updates the user with the given username
-userRouter.put("/user/:username", async (req, res) => {
+// PUT /user/:researcherId
+// Updates the user with the given researcherId
+userRouter.put("/user/:researcherId", async (req, res) => {
     try {76
-        const username = req.params.username;
+        const researcherId = req.params.researcherId;
         const updates = req.body.updates;
 
-        if (!updates) {
-            return res.status(400).json({ message: "Updates not provided" });
+        if (!updates || typeof updates !== 'object' || Array.isArray(updates) || Object.keys(updates).length === 0) {
+            return res.status(400).json({ message: "Invalid or empty updates object" });
         }
         
-        const user = await User.findOneAndUpdate({ username }, updates, { new: true, runValidators: true }).select("-password");
+        const user = await User.findOneAndUpdate({ researcherId }, updates, { new: true, runValidators: true }).select("-password");
 
         if (!user) {
             return res.status(404).json({ message: "User not found" });

@@ -28,7 +28,7 @@ const Users = () => {
         <ul>
           {users.map((user) => (
             <li key={user._id}>
-              <strong>{user.fullName}</strong> ({user.username}) — {user.email}
+              <strong>{user.fullName}</strong> ({user.researcherId}) — {user.email}
             </li>
           ))}
         </ul>
