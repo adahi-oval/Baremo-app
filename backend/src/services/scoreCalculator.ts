@@ -45,7 +45,7 @@ export const scoreCalculator = (data: MeritData): number | undefined => {
             const articlePosition = data.position as string;
             if(!data.index || !articlePosition) { return undefined; }
 
-            if (data.index != "No Indexado") {
+            if (data.index != "no indexado") {
                 switch(articlePosition.toLowerCase()) {
                     case "hcp":
                         return 7;
@@ -68,6 +68,8 @@ export const scoreCalculator = (data: MeritData): number | undefined => {
                     default:
                         return 0.5;
                 }
+            } else {
+                return 0.5;
             }
 
         case MeritTypes.Book:

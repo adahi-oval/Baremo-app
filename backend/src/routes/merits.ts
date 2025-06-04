@@ -6,9 +6,9 @@ const meritRouter = Router();
 
 // GETTERS
 
-// GET /merit/:id
+// GET /merits/:id
 // Devuelve la info de un merito concreto
-meritRouter.get("/merit/:id", async (req, res) => {
+meritRouter.get("/merits/:id", async (req, res) => {
     try {
         const id = req.params.id;
 
@@ -32,9 +32,9 @@ meritRouter.get("/merit/:id", async (req, res) => {
     }
 });
 
-// GET /merit/complete
+// GET /merits/status/complete
 // Devuelve los meritos con el flag de completos
-meritRouter.get("/merit/status/complete", async (req, res) => {
+meritRouter.get("/merits/status/complete", async (req, res) => {
     try {
         const completeMerits = await Publication.find({ complete: true });
 
@@ -53,11 +53,31 @@ meritRouter.get("/merit/status/complete", async (req, res) => {
     }
 });
 
+// GET /merits/status/incomplete
+// Gets all incomplete merits (flag set to false)
+meritRouter.get("/merits/status/incomplete", async (req, res) => {
+    try {
+        const incompleteMerits = await Publication.find({ complete: false });
+
+        if (!incompleteMerits || incompleteMerits.length === 0) {
+            return res.status(404).json({ error: "No incomplete merits found" });
+        }
+
+        res.status(200).json({ merits: incompleteMerits });
+    } catch (err) {
+        if (err instanceof Error) {
+            res.status(400).json({ error: err.message });
+        } else {
+            res.status(400).json({ error: "Unknown error" });
+        }
+    }
+});
+
 // POSTS
 
-// POST /merit
+// POST /merits
 // Crea un nuevo merito
-meritRouter.post("/merit", async (req, res) => {
+meritRouter.post("/merits", async (req, res) => {
     try {
         const data = req.body.merit;
         const type = data.type as string;

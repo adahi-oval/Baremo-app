@@ -2,21 +2,21 @@ import { Schema } from 'mongoose';
 import { Publication, IPublication } from '../Publication';
 
 export interface IArticle extends IPublication {
-  index: 'JCR' | 'SJR' | 'No Indexado' | 'n/a';
-  position: 'HCP' | 'D1' | 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'No Indexado' | 'n/a';
+  index: 'jcr' | 'sjr' | 'no indexado' | 'n/a';
+  position: 'hcp' | 'd1' | 'q1' | 'q2' | 'q3' | 'q4' | 'no indexado' | 'n/a';
 }
 
 const articleSchema = new Schema<IArticle>({
   index: {
     type: String,
     required: true,
-    enum: ['JCR', 'SJR', 'No Indexado', 'n/a'],
+    enum: ['jcr', 'sjr', 'no indexado', 'n/a'],
     default: 'n/a',
   },
   position: {
     type: String,
     required: true,
-    enum: ['HCP', 'D1', 'Q1', 'Q2', 'Q3', 'Q4', 'No Indexado', 'n/a'],
+    enum: ['hcp', 'd1', 'q1', 'q2', 'q3', 'q4', 'no indexado', 'n/a'],
     default: 'n/a',
   },
 });

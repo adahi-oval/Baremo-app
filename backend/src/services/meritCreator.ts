@@ -39,14 +39,23 @@ export const meritCreator = async (data: MeritData): Promise<boolean | null> => 
             throw new Error("Merit type is required");
         }
 
+        const user = await User.findByResearcherIdPrivate(data.userId);
+        if (!user) {
+            throw new Error("ResearcherId not found or not provided.")
+        }
+
         switch(type) {
             case MeritTypes.Sexenio:
-                const sexenio = new Sexenio(data);
-                sexenio.save();
+                const sexenio = await Sexenio.create({
+                    user: user,
+                    title: data.title,
+                    active: data.active,
+                    score: scoreCalculator(data)
+                });
+
                 return sexenio.complete ? true : false;
 
             case MeritTypes.Award:
-                const user = await User.findByUsernameAll(data.username);
                 const award = await Award.create({
                     user: user,
                     title: data.title,
@@ -57,8 +66,14 @@ export const meritCreator = async (data: MeritData): Promise<boolean | null> => 
                 return award.complete ? true : false;
                 
             case MeritTypes.Article:
-                const article = new Article(data);
-                article.save();
+                const article = await Article.create({
+                    user: user,
+                    title: data.title,
+                    score: scoreCalculator(data),
+                    index: data.index,
+                    position: data.position
+                });
+
                 return article.complete ? true : false;
             
             case MeritTypes.Book:
