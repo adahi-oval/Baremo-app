@@ -1,14 +1,14 @@
 import { Router } from "express";
-import { Publication } from "../models/Publication";
+import { IPublication, Publication } from "../models/Publication";
 import { meritCreator } from "../services/meritCreator";
 
 const meritRouter = Router();
 
 // GETTERS
 
-// GET /merits/:id
+// GET /merit/:id
 // Devuelve la info de un merito concreto
-meritRouter.get("/merits/:id", async (req, res) => {
+meritRouter.get("/merit/:id", async (req, res) => {
     try {
         const id = req.params.id;
 
@@ -70,6 +70,25 @@ meritRouter.get("/merits/status/incomplete", async (req, res) => {
         } else {
             res.status(400).json({ error: "Unknown error" });
         }
+    }
+});
+
+// GET /merits/:researcherId
+// Devuelve todos los méritos de un invest. concreto por Id
+meritRouter.get("/merits/:researcherId", async (req, res) => {
+    try {
+        const researcherId = parseInt(req.params.researcherId as string);
+
+        if (!researcherId) {
+            return res.status(400).json({ error: "Researcher ID required." });
+        }
+
+        const meritsOfResearcher = await Publication.findAllMeritsByResearcherId(researcherId);
+
+        res.status(200).json({ "merits": meritsOfResearcher });
+
+    } catch (err) {
+        
     }
 });
 

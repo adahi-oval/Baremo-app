@@ -15,7 +15,8 @@ export interface IUser extends Document {
 export interface IUserMethods extends Model<IUser> {
   findByUsername(username: string): Promise<IUser | null>;
   findByUsernameAll(username: string): Promise<IUser | null>;
-  findByResearcherIdPrivate(researcherId: number): Promise<IUser|null>;
+  findByResearcherIdPrivate(researcherId: number): Promise<IUser | null>;
+  findIdByResearcherId(researcherId: number): Promise<string | null>;
 }
 
 const userSchema = new Schema<IUser>({
@@ -38,8 +39,12 @@ userSchema.statics.findByUsernameAll = async function (username: string): Promis
 };
 
 userSchema.statics.findByResearcherIdPrivate = async function (researcherId: number): Promise<IUser | null> {
-  return this.findOne({ researcherId: researcherId });
+  return this.findOne({ researcherId: researcherId }).exec();
 };
+
+userSchema.statics.findIdByResearcherId = async function (researcherId: number): Promise<string | null> {
+  return this.findOne({ researcherId: researcherId }).select("_id").exec();
+}
 
 userSchema.pre<IUser>('save', async function (next) {
   if (!this.isModified('password')) return next();

@@ -1,5 +1,5 @@
-import { Schema, model, Document } from 'mongoose';
-import { IUser } from './User';
+import { Schema, model, Document, Model } from 'mongoose';
+import { IUser, User } from './User';
 
 export interface IPublication extends Document {
   pubType: string;
@@ -8,6 +8,10 @@ export interface IPublication extends Document {
   score: number;
   complete: boolean;
   [key: string]: any; // más keys
+}
+
+export interface IPublicationMethods extends Model<IPublication> {
+  findAllMeritsByResearcherId(researcherId: number): Promise<IPublication[] | null>;
 }
 
 const baseOptions = {
@@ -22,6 +26,12 @@ const publicationSchema = new Schema<IPublication>({
   score: { type: Number, required: true, default: 0 },
   complete: { type: Boolean, required: true, default: false }
 }, baseOptions);
+
+publicationSchema.statics.findAllMeritsByResearcherId = async function (researcherId: number): Promise<IPublication[] | null> {
+  const user = await User.findIdByResearcherId(researcherId);
+
+  return this.find({ user: user });
+}
 
 // pre save hook para determinar si está o no completa la publicación
 publicationSchema.pre('save', function (next) {
@@ -39,4 +49,4 @@ publicationSchema.pre('save', function (next) {
   next();
 });
 
-export const Publication = model<IPublication>('Publication', publicationSchema);
+export const Publication = model<IPublication, IPublicationMethods>('Publication', publicationSchema);
