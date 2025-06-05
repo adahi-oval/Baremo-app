@@ -39,7 +39,7 @@ export const meritCreator = async (data: MeritData): Promise<boolean | null> => 
             throw new Error("Merit type is required");
         }
 
-        const user = await User.findByResearcherIdPrivate(data.userId);
+        const user = await User.findByResearcherIdPrivate(data.user);
         if (!user) {
             throw new Error("ResearcherId not found or not provided.")
         }
@@ -50,6 +50,7 @@ export const meritCreator = async (data: MeritData): Promise<boolean | null> => 
                     user: user,
                     title: data.title,
                     active: data.active,
+                    year: data.year,
                     score: scoreCalculator(data)
                 });
 
@@ -59,8 +60,9 @@ export const meritCreator = async (data: MeritData): Promise<boolean | null> => 
                 const award = await Award.create({
                     user: user,
                     title: data.title,
-                    awardType: data.awardType, // tipo de premio
-                    score: scoreCalculator(data)
+                    score: scoreCalculator(data),
+                    year: data.year,
+                    awardType: data.awardType
                 });
 
                 return award.complete ? true : false;
@@ -70,6 +72,7 @@ export const meritCreator = async (data: MeritData): Promise<boolean | null> => 
                     user: user,
                     title: data.title,
                     score: scoreCalculator(data),
+                    year: data.year,
                     index: data.index,
                     position: data.position
                 });
@@ -77,28 +80,62 @@ export const meritCreator = async (data: MeritData): Promise<boolean | null> => 
                 return article.complete ? true : false;
             
             case MeritTypes.Book:
-                const book = new Book(data);
-                book.save();
+                const book = await Book.create({
+                    user: user,
+                    title: data.title,
+                    score: scoreCalculator(data),
+                    year: data.year,
+                    bookType: data.bookType,
+                    publisher: data.publisher,
+                    publisherPosition: data.publisherPosition
+                });
+                
                 return book.complete ? true : false;
             
             case MeritTypes.Conference:
-                const conference = new Conference(data);
-                conference.save();
+                const conference = await Conference.create({
+                    user: user,
+                    title: data.title,
+                    score: scoreCalculator(data),
+                    year: data.year,
+                    conferenceType: data.conferenceType,
+                    contributionType: data.contributionType
+                });
+                
                 return conference.complete ? true : false;
             
             case MeritTypes.Contract:
-                const contract = new Contract(data);
-                contract.save();
+                const contract = await Contract.create({
+                    user: user,
+                    title: data.title,
+                    score: scoreCalculator(data),
+                    year: data.year,
+                    role: data.role
+                });
+                
                 return contract.complete ? true : false;
             
             case MeritTypes.Project:
-                const project = new Project(data);
-                project.save();
+                const project = await Project.create({
+                    user: user,
+                    title: data.title,
+                    score: scoreCalculator(data),
+                    year: data.year,
+                    projectType: data.projectType,
+                    role: data.role
+                });
+                
                 return project.complete ? true : false;
             
             case MeritTypes.Thesis:
-                const thesis = new Thesis(data);
-                thesis.save();
+                const thesis = await Thesis.create({
+                    user: user,
+                    title: data.title,
+                    score: scoreCalculator(data),
+                    year: data.year,
+                    thesisType: data.thesisType
+                });
+                
                 return thesis.complete ? true : false;
             
             default:

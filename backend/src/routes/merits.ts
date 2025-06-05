@@ -85,10 +85,58 @@ meritRouter.get("/merits/:researcherId", async (req, res) => {
 
         const meritsOfResearcher = await Publication.findAllMeritsByResearcherId(researcherId);
 
-        res.status(200).json({ "merits": meritsOfResearcher });
+        res.status(200).json({ merits: meritsOfResearcher });
 
     } catch (err) {
-        
+        if (err instanceof Error) {
+            res.status(400).json({ error: err.message });
+        } else {
+            res.status(400).json({ error: "Unknown error" });
+        }
+    }
+});
+
+// GET /merits/:researcherId/complete
+// Devuelve todos los méritos COMPLETOS de un invest. concreto por Id 
+meritRouter.get("/merits/:researcherId/complete", async (req, res) => {
+    try {
+        const researcherId = parseInt(req.params.researcherId as string);
+
+        if (!researcherId) {
+            return res.status(400).json({ error: "Researcher ID required." });
+        }
+
+        const completeMeritsOfResearcher = await Publication.findCompleteMeritsByResearcherId(researcherId);
+
+        res.status(200).json({ merits: completeMeritsOfResearcher });
+    } catch (err) {
+        if (err instanceof Error) {
+            res.status(400).json({ error: err.message });
+        } else {
+            res.status(400).json({ error: "Unknown error" });
+        }
+    }
+});
+
+// GET /merits/:researcherId/incomplete
+// Devuelve todos los méritos INCOMPLETOS de un invest. concreto por Id 
+meritRouter.get("/merits/:researcherId/incomplete", async (req, res) => {
+    try {
+        const researcherId = parseInt(req.params.researcherId as string);
+
+        if (!researcherId) {
+            return res.status(400).json({ error: "Researcher ID required." });
+        }
+
+        const incompleteMeritsOfResearcher = await Publication.findIncompleteMeritsByResearcherId(researcherId);
+
+        res.status(200).json({ merits: incompleteMeritsOfResearcher });
+    } catch (err) {
+        if (err instanceof Error) {
+            res.status(400).json({ error: err.message });
+        } else {
+            res.status(400).json({ error: "Unknown error" });
+        }
     }
 });
 
