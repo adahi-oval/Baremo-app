@@ -9,7 +9,7 @@ const sexenioSchema = new Schema<ISexenio>({
   active: {
     type: Boolean,
     required: true,
-    default: undefined,
+    default: false,
   },
 });
 

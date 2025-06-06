@@ -43,7 +43,9 @@ userSchema.statics.findByResearcherIdPrivate = async function (researcherId: num
 };
 
 userSchema.statics.findIdByResearcherId = async function (researcherId: number): Promise<string | null> {
-  return this.findOne({ researcherId: researcherId }).select("_id").exec();
+  const user = await this.findOne({ researcherId }, { _id: 1 }).lean();
+
+  return user._id.toString();
 }
 
 userSchema.pre<IUser>('save', async function (next) {

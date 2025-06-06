@@ -1,6 +1,7 @@
 import { Schema, model, Document, Model } from 'mongoose';
 import { IUser, User } from './User';
 import { number } from 'zod';
+import { scoreCalculator } from '../services/scoreCalculator';
 
 export interface IPublication extends Document {
   pubType: string;
@@ -25,7 +26,7 @@ const baseOptions = {
 };
 
 const publicationSchema = new Schema<IPublication>({
-  user: { type: Schema.Types.ObjectId, ref: 'User', required: true, default: 'n/a' },
+  user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   title: { type: String, required: true, default: 'n/a' },
   score: { type: Number, required: true, default: 0 },
   complete: { type: Boolean, required: true, default: false },
@@ -83,6 +84,8 @@ publicationSchema.pre('save', function (next) {
     const value = doc[key];
     return value !== 'n/a' && value !== undefined && value !== null && value !== -1;
   });
+
+  doc.score = scoreCalculator(doc);
 
   next();
 });

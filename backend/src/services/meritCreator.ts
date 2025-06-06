@@ -9,28 +9,8 @@ import { Sexenio } from "../models/merits/Sexenio";
 import { Transference } from "../models/merits/Transference";
 import { Captacion } from "../models/merits/Captacion";
 import { User } from "../models/User";
-import { scoreCalculator } from "./scoreCalculator";
-
-export enum MeritTypes {
-    Book = "book",
-    Article = "article",
-    Award = "award",
-    Conference = "conference",
-    Contract = "contract",
-    Project = "project",
-    Sexenio = "sexenio",
-    Thesis = "thesis",
-    Transference = "transference"
-}
-
-export type MeritData = {
-    type: MeritTypes;
-    title: string;
-    username: string;
-    score: number;
-    complete: boolean;
-    [key: string]: any; // más keys
-}
+import { MeritTypes } from "../types/MeritTypes";
+import { MeritData } from "../types/MeritData";
 
 export const meritCreator = async (data: MeritData): Promise<boolean | null> => {
     try {
@@ -51,92 +31,94 @@ export const meritCreator = async (data: MeritData): Promise<boolean | null> => 
                     title: data.title,
                     active: data.active,
                     year: data.year,
-                    score: scoreCalculator(data)
                 });
 
-                return sexenio.complete ? true : false;
+                return sexenio.complete;
 
             case MeritTypes.Award:
                 const award = await Award.create({
                     user: user,
                     title: data.title,
-                    score: scoreCalculator(data),
                     year: data.year,
                     awardType: data.awardType
                 });
 
-                return award.complete ? true : false;
+                return award.complete;
                 
             case MeritTypes.Article:
                 const article = await Article.create({
                     user: user,
                     title: data.title,
-                    score: scoreCalculator(data),
                     year: data.year,
                     index: data.index,
                     position: data.position
                 });
 
-                return article.complete ? true : false;
+                return article.complete;
             
             case MeritTypes.Book:
                 const book = await Book.create({
                     user: user,
                     title: data.title,
-                    score: scoreCalculator(data),
                     year: data.year,
                     bookType: data.bookType,
                     publisher: data.publisher,
                     publisherPosition: data.publisherPosition
                 });
                 
-                return book.complete ? true : false;
+                return book.complete;
             
             case MeritTypes.Conference:
                 const conference = await Conference.create({
                     user: user,
                     title: data.title,
-                    score: scoreCalculator(data),
                     year: data.year,
                     conferenceType: data.conferenceType,
                     contributionType: data.contributionType
                 });
                 
-                return conference.complete ? true : false;
+                return conference.complete;
             
             case MeritTypes.Contract:
                 const contract = await Contract.create({
                     user: user,
                     title: data.title,
-                    score: scoreCalculator(data),
                     year: data.year,
                     role: data.role
                 });
                 
-                return contract.complete ? true : false;
+                return contract.complete;
             
             case MeritTypes.Project:
                 const project = await Project.create({
                     user: user,
                     title: data.title,
-                    score: scoreCalculator(data),
                     year: data.year,
                     projectType: data.projectType,
                     role: data.role
                 });
                 
-                return project.complete ? true : false;
+                return project.complete;
             
             case MeritTypes.Thesis:
                 const thesis = await Thesis.create({
                     user: user,
                     title: data.title,
-                    score: scoreCalculator(data),
                     year: data.year,
                     thesisType: data.thesisType
                 });
                 
-                return thesis.complete ? true : false;
+                return thesis.complete;
+
+            case MeritTypes.Transference:
+                const transference = await Transference.create({
+                    user: user,
+                    title: data.title,
+                    year: data.year,
+                    transferenceType: data.transferenceType
+                });
+
+                return transference.complete;
             
             default:
                 throw new Error(`Invalid merit type: ${type}`);

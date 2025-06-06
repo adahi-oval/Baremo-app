@@ -1,144 +1,87 @@
+import { MeritQuerySchema, ResearcherMeritQuerySchema } from "../validators/merits";
+import { z } from "zod";
 import { Router } from "express";
 import { IPublication, Publication } from "../models/Publication";
 import { meritCreator } from "../services/meritCreator";
+import { User } from "../models/User";
+import { scoreCalculator } from "../services/scoreCalculator";
+
+
+interface MeritQueryParams {
+  id?: string;
+  status?: 'complete' | 'incomplete';
+  year?: string;
+}
+
 
 const meritRouter = Router();
 
 // GETTERS
 
-// GET /merit/:id
-// Devuelve la info de un merito concreto
-meritRouter.get("/merit/:id", async (req, res) => {
-    try {
-        const id = req.params.id;
+// GET /merits
+// Handles all merits, optionally by ID or status
 
-        if (!id) {
-            return res.status(400).json({ error: "Merit ID is required" });
-        }
-
-        const merit = await Publication.findById(id);
-
-        if (!merit) {
-            return res.status(404).json({ error: "Merit not found" });
-        }
-
-        res.status(200).json(merit);
-    } catch (err) {
-        if (err instanceof Error) {
-            res.status(400).json({ error: err.message });
-        } else {
-            res.status(400).json({ error: "Unknown error" });
-        }
+meritRouter.get("/merits", async (req, res) => {
+  try {
+    const parseResult = MeritQuerySchema.safeParse(req.query);
+    if (!parseResult.success) {
+      return res.status(400).json({ error: parseResult.error.errors });
     }
+
+    const { status, year } = parseResult.data;
+    const query: any = {};
+
+    if (status) query.complete = status === "complete";
+    if (year) query.year = parseInt(year);
+
+    const merits = await Publication.find(query);
+
+    if (!merits || merits.length === 0) {
+      return res.status(404).json({ error: "No merits found" });
+    }
+
+    res.status(200).json({ merits });
+  } catch (err) {
+    res.status(400).json({ error: err instanceof Error ? err.message : "Unknown error" });
+  }
 });
 
-// GET /merits/status/complete
-// Devuelve los meritos con el flag de completos
-meritRouter.get("/merits/status/complete", async (req, res) => {
-    try {
-        const completeMerits = await Publication.find({ complete: true });
 
-        if (!completeMerits || completeMerits.length === 0) {
-            return res.status(404).json({ error: "No complete merits found" });
-        }
-
-        res.status(200).json({ merits: completeMerits })
-
-    } catch (err) {
-        if (err instanceof Error) {
-            res.status(400).json({ error: err.message });
-        } else {
-            res.status(400).json({ error: "Unknown error" });
-        }
-    }
-});
-
-// GET /merits/status/incomplete
-// Gets all incomplete merits (flag set to false)
-meritRouter.get("/merits/status/incomplete", async (req, res) => {
-    try {
-        const incompleteMerits = await Publication.find({ complete: false });
-
-        if (!incompleteMerits || incompleteMerits.length === 0) {
-            return res.status(404).json({ error: "No incomplete merits found" });
-        }
-
-        res.status(200).json({ merits: incompleteMerits });
-    } catch (err) {
-        if (err instanceof Error) {
-            res.status(400).json({ error: err.message });
-        } else {
-            res.status(400).json({ error: "Unknown error" });
-        }
-    }
-});
-
-// GET /merits/:researcherId
-// Devuelve todos los méritos de un invest. concreto por Id
+// GET /merits/researcher/:researcherId
+// Handles merits for a specific researcher with optional status filtering
 meritRouter.get("/merits/:researcherId", async (req, res) => {
-    try {
-        const researcherId = parseInt(req.params.researcherId as string);
-
-        if (!researcherId) {
-            return res.status(400).json({ error: "Researcher ID required." });
-        }
-
-        const meritsOfResearcher = await Publication.findAllMeritsByResearcherId(researcherId);
-
-        res.status(200).json({ merits: meritsOfResearcher });
-
-    } catch (err) {
-        if (err instanceof Error) {
-            res.status(400).json({ error: err.message });
-        } else {
-            res.status(400).json({ error: "Unknown error" });
-        }
+  try {
+    const researcherId = parseInt(req.params.researcherId as string);
+    if (isNaN(researcherId)) {
+      return res.status(400).json({ error: "Invalid researcher ID" });
     }
+
+    const user: string = await User.findIdByResearcherId(researcherId) as string;
+
+    const parseResult = ResearcherMeritQuerySchema.safeParse(req.query);
+    if (!parseResult.success) {
+      return res.status(400).json({ error: parseResult.error.errors });
+    }
+
+    const { status, year } = parseResult.data;
+
+    const baseQuery: any = { user };
+
+    if (status) baseQuery.complete = status === "complete";
+    if (year) baseQuery.year = parseInt(year);
+
+    const merits = await Publication.find(baseQuery);
+
+    if (!merits || merits.length === 0) {
+      return res.status(404).json({ error: "No merits found for this researcher" });
+    }
+
+    res.status(200).json({ merits });
+  } catch (err) {
+    res.status(400).json({ error: err instanceof Error ? err.message : "Unknown error" });
+  }
 });
 
-// GET /merits/:researcherId/complete
-// Devuelve todos los méritos COMPLETOS de un invest. concreto por Id 
-meritRouter.get("/merits/:researcherId/complete", async (req, res) => {
-    try {
-        const researcherId = parseInt(req.params.researcherId as string);
-
-        if (!researcherId) {
-            return res.status(400).json({ error: "Researcher ID required." });
-        }
-
-        const completeMeritsOfResearcher = await Publication.findCompleteMeritsByResearcherId(researcherId);
-
-        res.status(200).json({ merits: completeMeritsOfResearcher });
-    } catch (err) {
-        if (err instanceof Error) {
-            res.status(400).json({ error: err.message });
-        } else {
-            res.status(400).json({ error: "Unknown error" });
-        }
-    }
-});
-
-// GET /merits/:researcherId/incomplete
-// Devuelve todos los méritos INCOMPLETOS de un invest. concreto por Id 
-meritRouter.get("/merits/:researcherId/incomplete", async (req, res) => {
-    try {
-        const researcherId = parseInt(req.params.researcherId as string);
-
-        if (!researcherId) {
-            return res.status(400).json({ error: "Researcher ID required." });
-        }
-
-        const incompleteMeritsOfResearcher = await Publication.findIncompleteMeritsByResearcherId(researcherId);
-
-        res.status(200).json({ merits: incompleteMeritsOfResearcher });
-    } catch (err) {
-        if (err instanceof Error) {
-            res.status(400).json({ error: err.message });
-        } else {
-            res.status(400).json({ error: "Unknown error" });
-        }
-    }
-});
 
 // POSTS
 
@@ -170,5 +113,31 @@ meritRouter.post("/merits", async (req, res) => {
         }
     }
 });
+
+// PUTS
+
+// PUT /merits/:id
+// Actualiza un mérito por id
+meritRouter.put("/merits/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updates = req.body;
+
+        const merit = await Publication.findById(id).populate('user');
+        if (!merit) return res.status(404).json({ error: "Merit not found" });
+
+        Object.assign(merit, updates);
+
+        const reScored = scoreCalculator(merit);
+
+        const updated = await merit.save();
+
+        res.status(200).json(updated);
+    } catch (err) {
+        res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
+    }
+});
+  
+
 
 export default meritRouter;
