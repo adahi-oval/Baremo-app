@@ -17,6 +17,8 @@ export interface IPublicationMethods extends Model<IPublication> {
   findAllMeritsByResearcherId(researcherId: number): Promise<IPublication[] | null>;
   findCompleteMeritsByResearcherId(researcherId: number): Promise<IPublication[] | null>;
   findIncompleteMeritsByResearcherId(researcherId: number): Promise<IPublication[] | null>;
+  findAllActiveMeritsByResearcherId(researcherId: number): Promise<IPublication[] | null>;
+  calculateTotalScoreByResearcherId(researcherId:number): Promise<number>;
 }
 
 const baseOptions = {

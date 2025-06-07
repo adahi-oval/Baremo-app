@@ -6,14 +6,6 @@ import { meritCreator } from "../services/meritCreator";
 import { User } from "../models/User";
 import { scoreCalculator } from "../services/scoreCalculator";
 
-
-interface MeritQueryParams {
-  id?: string;
-  status?: 'complete' | 'incomplete';
-  year?: string;
-}
-
-
 const meritRouter = Router();
 
 // GETTERS
@@ -42,7 +34,7 @@ meritRouter.get("/merits", async (req, res) => {
 
     res.status(200).json({ merits });
   } catch (err) {
-    res.status(400).json({ error: err instanceof Error ? err.message : "Unknown error" });
+    res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
   }
 });
 
@@ -78,7 +70,7 @@ meritRouter.get("/merits/:researcherId", async (req, res) => {
 
     res.status(200).json({ merits });
   } catch (err) {
-    res.status(400).json({ error: err instanceof Error ? err.message : "Unknown error" });
+    res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
   }
 });
 
@@ -105,12 +97,8 @@ meritRouter.post("/merits", async (req, res) => {
             res.status(400).json({ message: `${type} failed to be created` })
         }
 
-    } catch (error) {
-        if (error instanceof Error) {
-            res.status(400).json({ error: error.message });
-        } else {
-            res.status(400).json({ error: "Unknown error" });
-        }
+    } catch (err) {
+      res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
     }
 });
 
@@ -128,14 +116,29 @@ meritRouter.put("/merits/:id", async (req, res) => {
 
         Object.assign(merit, updates);
 
-        const reScored = scoreCalculator(merit);
-
         const updated = await merit.save();
 
         res.status(200).json(updated);
     } catch (err) {
         res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
     }
+});
+
+// DELETES
+
+// DELETE /merits/:id
+// Elimina de la base de datos un mérito por ID
+meritRouter.delete("/merits/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    if(!id) { res.status(400).json({ error: "Merit ID is requires for deletion" })}
+
+    const merit = await Publication.findByIdAndDelete(id);
+
+    res.status(200).json({ message: "Merit deleted succesfuly.", merit });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
+  }
 });
   
 

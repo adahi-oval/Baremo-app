@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { User } from "../models/User";
+import { Publication } from "../models/Publication";
+import { userScorer } from "../services/userScorer";
 
 const userRouter = Router();
 
@@ -9,19 +11,20 @@ const userRouter = Router();
 // Returns the user with the given researcherId
 userRouter.get("/user/:researcherId", async (req, res) => {
     try {
-        const researcherId = req.params.researcherId;
+        const researcherId = Number(req.params.researcherId);
 
         if (!researcherId) {
             return res.status(400).json({ error: "Researcher ID is required" });
         }
         
         const user = await User.findOne({researcherId});
+        const userScore = await userScorer(researcherId);
 
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
 
-        res.status(200).json(user);
+        res.status(200).json({user: user, userScore: userScore});
     } catch (err) {
         if (err instanceof Error) {
             res.status(400).json({ error: err.message });
@@ -48,6 +51,20 @@ userRouter.get("/users", async (req, res) => {
         } else {
             res.status(400).json({ error: "Unknown error" });
         }
+    }
+});
+
+// GET /user/:researcherId/score
+// Puntuación total de un investigador concreto
+userRouter.get("/user/:researcherId/score", async (req, res) => {
+    const researcherId = Number(req.params.researcherId);
+    if (isNaN(researcherId)) return res.status(400).json({ error: 'Invalid researcher ID' });
+
+    try {
+        const totalScore = await userScorer(researcherId);
+        return res.json({ researcherId, totalScore });
+    } catch (err) {
+        res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
     }
 });
 
