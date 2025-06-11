@@ -14,7 +14,7 @@ export const loginUser = async (username: string, password: string) => {
   return res.data;
 };
 
-export const getAllUsers = async () => {
+export async function getAllUsers(): Promise<IUser[]> {
   const res = await api.get('/users');
   return res.data.users;
 };

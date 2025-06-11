@@ -1,6 +1,23 @@
+import { Container, Row, Col } from 'react-bootstrap';
+
 export const Home = () => (
-  <div>
-    <h1>Welcome to the Home Page</h1>
-    <p>Start building your app here.</p>
-  </div>
+  <Container className="py-5">
+    <Row className="justify-content-center text-center mb-4">
+      <Col md={8}>
+        <h1 className="display-4 fw-bold">Bienvenido a la Plataforma del Baremo</h1>
+        <div
+          style={{
+            height: '2px',
+            width: '100%',
+            backgroundColor: '#d3d3d3', // light gray
+            margin: '2rem auto',
+          }}
+        />
+        <p className="lead text-muted mt-3">
+          Explora, gestiona y visualiza los méritos académicos de los usuarios. 
+          Esta plataforma te permite consultar publicaciones, puntuaciones y más.
+        </p>
+      </Col>
+    </Row>
+  </Container>
 );

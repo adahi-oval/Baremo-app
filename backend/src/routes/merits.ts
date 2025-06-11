@@ -26,7 +26,7 @@ meritRouter.get("/merits", async (req, res) => {
     if (status) query.complete = status === "complete";
     if (year) query.year = parseInt(year);
 
-    const merits = await Publication.find(query);
+    const merits = await Publication.find(query).populate("user", "-password -createdAt -updatedAt -__v -_id");
 
     if (!merits || merits.length === 0) {
       return res.status(404).json({ error: "No merits found" });
@@ -38,6 +38,28 @@ meritRouter.get("/merits", async (req, res) => {
   }
 });
 
+// GET /merit/:meritId
+// Gets a specific merit by id
+
+meritRouter.get("/merit/:meritId", async (req, res) => {
+  try {
+    const meritId = req.params.meritId as string;
+    if (!meritId) {
+      return res.status(400).json({ error: "meritId not provided" });
+    }
+
+    const merit = await Publication.findById(meritId).populate("user", "-password -createdAt -updatedAt -__v -_id");
+
+    if (!merit) {
+      return res.status(404).json({ error: "No merit found" });
+    }
+
+    res.status(200).json({merit});
+
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
+  }
+});
 
 // GET /merits/researcher/:researcherId
 // Handles merits for a specific researcher with optional status filtering

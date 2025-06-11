@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Home } from './pages/Home';
 import Users from './pages/Users';
 import { Layout } from './components/Layout';
+import { Merits } from './pages/Merits';
+import MeritDetail from './pages/MeritDetail';
 
 const App = () => (
   <Router>
@@ -9,6 +11,8 @@ const App = () => (
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/users" element={<Users />} />
+        <Route path="/merits" element={<Merits />} />
+        <Route path='/merit/:id' element={<MeritDetail />} />
       </Routes>
     </Layout>
   </Router>

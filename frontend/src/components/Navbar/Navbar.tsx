@@ -1,5 +1,6 @@
 // src/components/Navbar.tsx
 import { Navbar, Nav, Container } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import logo from '../../assets/logo-blanco-ull.svg';
 import './Navbar.css';
 
@@ -18,8 +19,9 @@ const CustomNavbar = () => {
         <Navbar.Toggle aria-controls="mainNavbar" style={{color: 'white'}} />
         <Navbar.Collapse id="mainNavbar" style={{color: 'white'}}>
           <Nav className="me-auto">
-            <Nav.Link href="/" className='custom-link'>Home</Nav.Link>
-            <Nav.Link href="users" className='custom-link'>Users</Nav.Link>
+            <Nav.Link as={Link} to="/" className="custom-link">Home</Nav.Link>
+            <Nav.Link as={Link} to="/merits" className="custom-link">Méritos</Nav.Link>
+            <Nav.Link as={Link} to="/users" className="custom-link">Usuarios</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>

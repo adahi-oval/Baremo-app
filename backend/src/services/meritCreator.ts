@@ -21,7 +21,7 @@ export const meritCreator = async (data: MeritData): Promise<boolean | null> => 
 
         const user = await User.findByResearcherIdPrivate(data.user);
         if (!user) {
-            throw new Error("ResearcherId not found or not provided.")
+            throw new Error("user not found or not provided.")
         }
 
         switch(type) {

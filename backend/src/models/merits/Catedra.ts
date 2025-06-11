@@ -18,4 +18,4 @@ const catedraSchema = new Schema<ICatedra>({
   },
 });
 
-export const Captacion = Publication.discriminator<ICatedra>('Captacion', catedraSchema);
+export const Captacion = Publication.discriminator<ICatedra>('Catedra', catedraSchema);

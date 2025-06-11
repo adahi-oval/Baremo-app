@@ -29,8 +29,8 @@ for a in page.select(".unidad-miembros__items .c-persona-card__detalles a")
 publication_links = [link.replace("detalle", "publicaciones") for link in links]
 
 def get_publications(link: str, pub_type: str, year: str, size: int) -> list[str]:
-# Construct the full URL with query parameters
-    new_link = f"{link}?f=true&agrTipoPublicacion={pub_type}&tipo=&min={year}&max={year}&size={size}"
+    # Construct the full URL with query parameters
+    new_link = f"{link}?f=true&agrTipoPublicacion={pub_type}&tipo=&min={year}&size={size}"
     
     # Request the page
     response = requests.get(new_link)
@@ -39,17 +39,23 @@ def get_publications(link: str, pub_type: str, year: str, size: int) -> list[str
     # Parse the page content
     soup = BeautifulSoup(response.text, "html.parser")
     
-    # Extract publication details
-    publications_details = [
-        elem.get_text(strip=True)
-        for elem in soup.select(".c-doc")
-    ]
+    publications_details = []
+
+    # Loop through each group of publications by year
+    for group in soup.select("div.grupo-docs__grupo"):
+        year_tag = group.select_one("h3.grupo-docs__grupo-titulo")
+        group_year = year_tag.get_text(strip=True) if year_tag else "unknown"
+
+        for elem in group.select(".c-doc"):
+            text = elem.get_text(strip=True)
+            # Prepend or append the year to the text (based on your preference)
+            publications_details.append(f"{group_year} - {text}")
 
     return publications_details
 
 def get_publication_link(link: str, pub_type: str, year: str, size: int) -> list[str]:
     # Build the full URL
-    new_link = f"{link}?&min={year}&max={year}&agrTipoPublicacion={pub_type}&size={size}"
+    new_link = f"{link}?&min={year}&agrTipoPublicacion={pub_type}&size={size}"
     
     # Request and parse the page
     response = requests.get(new_link)
@@ -75,7 +81,7 @@ def get_publications_data(links, pub_type, year):
     for link in links:
         count += 1
         print(f"12... {count}")
-        new_link = f"{link}?&min={year}&max={year}&agrTipoPublicacion={pub_type}"
+        new_link = f"{link}?&min={year}&agrTipoPublicacion={pub_type}"
         page = BeautifulSoup(requests.get(new_link).content, "html.parser")
         spans = page.select(".investigador-docs__title span")
 
@@ -114,15 +120,17 @@ def create_df(indexes0, counts, pubs, extra):
     rows = []
     j = 0
     for i in range(len(filtered_names)):
-        for pub in pubs[j: j + (counts[i])]:
+        for pub in pubs[j: j + counts[i]]:
+            # Extract the year if the publication string starts with it
+            year = pub.split(" - ")[0] if " - " in pub and pub[:4].isdigit() else None
             rows.append({
                 "Nombre": filtered_names[i],
                 "Apellidos": filtered_surnames[i],
                 "Area": filtered_fields[i],
-                "Num_Publicaciones": counts[i],  # Each row represents one publication
-                "Publicacion": pub
+                "Num_Publicaciones": counts[i],
+                "Publicacion": pub,
+                "Año": year
             })
-        
         j += counts[i]
 
     df = pd.DataFrame(rows)
@@ -133,6 +141,7 @@ def create_df(indexes0, counts, pubs, extra):
         "Area": [fields[i] for i in indexes0],
         "Num_Publicaciones": 0,
         "Publicacion": [None] * len(indexes0),
+        "Año": [None] * len(indexes0),
         "Extra": [None] * len(indexes0)
     })
 
