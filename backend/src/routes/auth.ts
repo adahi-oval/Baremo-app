@@ -56,4 +56,29 @@ authRouter.get("/protected", authenticate, authorize('admin'), (req, res) => {
   res.json({ message: "protectedddd" });
 });
 
+authRouter.post('/logout', (req, res) => {
+  res.clearCookie('token', {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production'
+  });
+
+  res.status(200).json({ message: 'Logged out successfully.' });
+});
+
+authRouter.get('/me', authenticate, async (req, res) => {
+  const userId = (req as any).user?.id;
+
+  try {
+    const user = await User.findById(userId).select('-password');
+    if (!user) {
+      return res.status(404).json({ error: 'User not found or not logged in.' });
+    }
+
+    res.json({user});
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
+  }
+});
+
 export default authRouter;

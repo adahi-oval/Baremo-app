@@ -39,3 +39,21 @@
 .custom-link:hover::after {
   width: 100%;
 }
+
+.custom-collapse {
+  color: white;
+  position: relative;
+}
+
+.login-nav {
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 991.98px) {
+  .login-nav {
+    position: absolute;
+    bottom: 0.1rem;
+    right: 0.1rem;
+  }
+}

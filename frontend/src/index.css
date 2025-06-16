@@ -52,3 +52,14 @@ body {
   opacity: 1;
   right: 0;
 }
+
+/* Variante nueva para bootstrap ULL */
+
+.btn-ull {
+  background-color: #5c068c !important;
+  color: white !important;
+}
+
+.btn-ull:hover {
+  background-color: #3d035c !important;
+}
