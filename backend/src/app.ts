@@ -4,6 +4,7 @@ import authRouter from './routes/auth';
 import testRouter from './routes/test';
 import userRouter from './routes/user';
 import meritRouter from './routes/merits';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 
@@ -17,8 +18,8 @@ app.get('/', (req, res) => {
     res.send({message: 'Hello World!'});
 });
 
+app.use(cookieParser());
 app.use(authRouter);
-app.use(testRouter);
 app.use(userRouter);
 app.use(meritRouter)
 

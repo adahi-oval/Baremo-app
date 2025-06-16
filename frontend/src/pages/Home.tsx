@@ -9,7 +9,7 @@ export const Home = () => (
           style={{
             height: '2px',
             width: '100%',
-            backgroundColor: '#d3d3d3', // light gray
+            backgroundColor: '#d3d3d3',
             margin: '2rem auto',
           }}
         />

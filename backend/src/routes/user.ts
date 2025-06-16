@@ -2,6 +2,7 @@ import { Router } from "express";
 import { User } from "../models/User";
 import { Publication } from "../models/Publication";
 import { userScorer } from "../services/userScorer";
+import bcrypt from "bcrypt";
 
 const userRouter = Router();
 
@@ -130,9 +131,13 @@ userRouter.put("/user/:researcherId", async (req, res) => {
         if (!updates || typeof updates !== 'object' || Array.isArray(updates) || Object.keys(updates).length === 0) {
             return res.status(400).json({ message: "Invalid or empty updates object" });
         }
-        
-        const user = await User.findOneAndUpdate({ researcherId }, updates, { new: true, runValidators: true }).select("-password");
 
+        if (updates.password) {
+            const salt = await bcrypt.genSalt(10);
+            updates.password = await bcrypt.hash(updates.password, salt);
+        }
+        
+        const user = await User.findOneAndUpdate({ researcherId }, updates, { new: true, runValidators: true }).select("-password -createdAt -__v");
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }

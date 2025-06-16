@@ -3,7 +3,7 @@ import { getAllMerits, type Merit } from "../../api/merits";
 import { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import './MeritTable.css';
-import { href, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const columns = [
     {
@@ -71,8 +71,7 @@ const MeritTable = () => {
     const table = useReactTable({
         data,
         columns,
-        getCoreRowModel: getCoreRowModel(),
-        columnResizeMode: "onChange"
+        getCoreRowModel: getCoreRowModel()
     })
 
     const navigate = useNavigate();

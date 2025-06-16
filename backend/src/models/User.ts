@@ -8,6 +8,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   institutes?: string[];
+  role: 'admin' | 'user';
   comparePassword(password: string): Promise<boolean>;
 }
 
@@ -25,6 +26,7 @@ const userSchema = new Schema<IUser>({
   researcherId: { type: Number, required: true, unique: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  role: { type: String, required: true, enum: ['admin', 'user'], default: 'user' },
   institutes: { type: [String], default: [], maxlength: 2 }
 }, {
   timestamps: true
