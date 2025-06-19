@@ -12,114 +12,119 @@ import { User } from "../models/User";
 import { MeritTypes } from "../types/MeritTypes";
 import { MeritData } from "../types/MeritData";
 
-export const meritCreator = async (data: MeritData): Promise<boolean | null> => {
+export interface CreatorResponse {
+    complete: boolean,
+    _id: string
+}
+
+export const meritCreator = async (data: MeritData): Promise<CreatorResponse | null> => {
     try {
-        const type = data.type;
+        const type: string = data.pubType;
         if (!type) {
             throw new Error("Merit type is required");
         }
 
-        const user = await User.findByResearcherIdPrivate(data.user);
+        const user = await User.findByResearcherIdPrivate(data.researcherId);
         if (!user) {
-            throw new Error("user not found or not provided.")
+            throw new Error("user not found or not provided.");
         }
 
-        switch(type) {
-            case MeritTypes.Sexenio:
+        switch (type.toLowerCase()) {
+            case MeritTypes.Sexenio: {
                 const sexenio = await Sexenio.create({
                     user: user,
                     title: data.title,
                     active: data.active,
                     year: data.year,
                 });
+                return { complete: sexenio.complete, _id: sexenio._id as string };
+            }
 
-                return sexenio.complete;
-
-            case MeritTypes.Award:
+            case MeritTypes.Award: {
                 const award = await Award.create({
                     user: user,
                     title: data.title,
                     year: data.year,
-                    awardType: data.awardType
+                    awardType: data.awardType,
                 });
+                return { complete: award.complete, _id: award._id as string };
+            }
 
-                return award.complete;
-                
-            case MeritTypes.Article:
+            case MeritTypes.Article: {
                 const article = await Article.create({
                     user: user,
                     title: data.title,
                     year: data.year,
                     index: data.index,
-                    position: data.position
+                    position: data.position,
                 });
+                return { complete: article.complete, _id: article._id as string };
+            }
 
-                return article.complete;
-            
-            case MeritTypes.Book:
+            case MeritTypes.Book: {
                 const book = await Book.create({
                     user: user,
                     title: data.title,
                     year: data.year,
                     bookType: data.bookType,
                     publisher: data.publisher,
-                    publisherPosition: data.publisherPosition
+                    publisherPosition: data.publisherPosition,
                 });
-                
-                return book.complete;
-            
-            case MeritTypes.Conference:
+                return { complete: book.complete, _id: book._id as string };
+            }
+
+            case MeritTypes.Conference: {
                 const conference = await Conference.create({
                     user: user,
                     title: data.title,
                     year: data.year,
                     conferenceType: data.conferenceType,
-                    contributionType: data.contributionType
+                    contributionType: data.contributionType,
                 });
-                
-                return conference.complete;
-            
-            case MeritTypes.Contract:
+                return { complete: conference.complete, _id: conference._id as string };
+            }
+
+            case MeritTypes.Contract: {
                 const contract = await Contract.create({
                     user: user,
                     title: data.title,
                     year: data.year,
-                    role: data.role
+                    role: data.role,
                 });
-                
-                return contract.complete;
-            
-            case MeritTypes.Project:
+                return { complete: contract.complete, _id: contract._id as string };
+            }
+
+            case MeritTypes.Project: {
                 const project = await Project.create({
                     user: user,
                     title: data.title,
                     year: data.year,
                     projectType: data.projectType,
-                    role: data.role
+                    role: data.role,
                 });
-                
-                return project.complete;
-            
-            case MeritTypes.Thesis:
+                return { complete: project.complete, _id: project._id as string };
+            }
+
+            case MeritTypes.Thesis: {
                 const thesis = await Thesis.create({
                     user: user,
                     title: data.title,
                     year: data.year,
-                    thesisType: data.thesisType
+                    thesisType: data.thesisType,
                 });
-                
-                return thesis.complete;
+                return { complete: thesis.complete, _id: thesis._id as string };
+            }
 
-            case MeritTypes.Transference:
+            case MeritTypes.Transference: {
                 const transference = await Transference.create({
                     user: user,
                     title: data.title,
                     year: data.year,
-                    transferenceType: data.transferenceType
+                    transferenceType: data.transferenceType,
                 });
+                return { complete: transference.complete, _id: transference._id as string };
+            }
 
-                return transference.complete;
-            
             default:
                 throw new Error(`Invalid merit type: ${type}`);
         }
@@ -130,4 +135,4 @@ export const meritCreator = async (data: MeritData): Promise<boolean | null> => 
             throw new Error("Unknown error");
         }
     }
-}
+};

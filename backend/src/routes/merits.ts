@@ -54,7 +54,7 @@ meritRouter.get("/merit/:meritId", async (req, res) => {
       return res.status(404).json({ error: "No merit found" });
     }
 
-    res.status(200).json({merit});
+    res.status(200).json({ merit });
 
   } catch (err) {
     res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
@@ -102,26 +102,28 @@ meritRouter.get("/merits/:researcherId", async (req, res) => {
 // POST /merits
 // Crea un nuevo merito
 meritRouter.post("/merits", async (req, res) => {
-    try {
-        const data = req.body.merit;
-        const type = data.type as string;
-        if (!type) {
-            return res.status(400).json({ error: "Merit type is required" });
-        }
+  try {
+    const data = req.body.merit;
+    const type = data.pubType as string;
 
-        const created = await meritCreator(data);
-
-        if (created === true) {
-            res.status(201).json({ message: `${type} created succesfully` })
-        } else if (created === false) {
-            res.status(201).json({ message: `${type} created with missing types` })
-        } else {
-            res.status(400).json({ message: `${type} failed to be created` })
-        }
-
-    } catch (err) {
-      res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
+    if (!type) {
+      return res.status(400).json({ error: "Merit type is required" });
     }
+
+    const created = await meritCreator(data);
+    if (!created) { return res.status(500).json({ error: "Error creating the merit. "})}
+
+    if (created.complete === true) {
+      res.status(201).json({ message: `${type} created succesfully`, id: created._id.toString() })
+    } else if (created.complete === false) {
+      res.status(201).json({ message: `${type} created with missing types`, id: created._id.toString() })
+    } else {
+      res.status(400).json({ message: `${type} failed to be created` })
+    }
+
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
+  }
 });
 
 // PUTS
@@ -129,21 +131,22 @@ meritRouter.post("/merits", async (req, res) => {
 // PUT /merits/:id
 // Actualiza un mérito por id
 meritRouter.put("/merits/:id", async (req, res) => {
-    try {
-        const { id } = req.params;
-        const updates = req.body;
+  try {
+    const { id } = req.params;
+    const updates = req.body.updates;
+    if(!updates) { res.status(404).json({error: "No updates provided."}) }
 
-        const merit = await Publication.findById(id).populate('user');
-        if (!merit) return res.status(404).json({ error: "Merit not found" });
+    const merit = await Publication.findById(id).populate('user');
+    if (!merit) return res.status(404).json({ error: "Merit not found" });
 
-        Object.assign(merit, updates);
+    Object.assign(merit, updates);
 
-        const updated = await merit.save();
+    const updated = await merit.save();
 
-        res.status(200).json(updated);
-    } catch (err) {
-        res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
-    }
+    res.status(200).json(updated);
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
+  }
 });
 
 // DELETES
@@ -153,16 +156,16 @@ meritRouter.put("/merits/:id", async (req, res) => {
 meritRouter.delete("/merits/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    if(!id) { res.status(400).json({ error: "Merit ID is requires for deletion" })}
+    if (!id) { res.status(400).json({ error: "La ID del mérito es necesaria para su eliminación." }) }
 
     const merit = await Publication.findByIdAndDelete(id);
 
-    res.status(200).json({ message: "Merit deleted succesfuly.", merit });
+    res.status(200).json({ message: "Mérito eliminado correctamente.", merit });
   } catch (err) {
     res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
   }
 });
-  
+
 
 
 export default meritRouter;
