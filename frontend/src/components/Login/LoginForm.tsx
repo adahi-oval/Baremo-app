@@ -24,10 +24,10 @@ export const LoginForm = ({ onLogin, error }: LoginFormProps) => {
   };
 
   return (
-    <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: '100vh' }}>
+    <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: '75vh' }}>
       <Row className="w-100 justify-content-center">
         <Col md={6} lg={5}>
-          <Card className="shadow-lg border-0">
+          <Card className="shadow-lg border-1">
             <Card.Body className="p-4">
               <h2 className="text-center mb-4">Iniciar Sesión</h2>
               {errorF && <Alert variant="danger">{errorF}</Alert>}
@@ -56,7 +56,7 @@ export const LoginForm = ({ onLogin, error }: LoginFormProps) => {
 
                 <div className="d-grid">
                   <Button variant="ull" type="submit" size="lg">
-                    Iniciar sesión
+                    <span>Iniciar sesión</span>
                   </Button>
                 </div>
               </Form>

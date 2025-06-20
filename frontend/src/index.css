@@ -20,12 +20,13 @@ body {
   border: none;
   color: #FFFFFF;
   text-align: center;
-  font-size: 28px;
-  padding: 20px;
-  width: 200px;
+  width: auto;
   transition: all 0.5s;
   cursor: pointer;
-  margin: 5px;
+}
+
+.botonUll:hover {
+  background-color: #3d035c !important;
 }
 
 .botonUll span {
@@ -45,7 +46,7 @@ body {
 }
 
 .botonUll:hover span {
-  padding-right: 25px;
+  padding-right: 15px;
 }
 
 .botonUll:hover span:after {
@@ -53,7 +54,7 @@ body {
   right: 0;
 }
 
-/* Variante nueva para bootstrap ULL */
+/* Variantes nuevas para bootstrap ULL */
 
 .btn-ull {
   background-color: #5c068c !important;
@@ -62,4 +63,203 @@ body {
 
 .btn-ull:hover {
   background-color: #3d035c !important;
+}
+
+.btn-ull span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.btn-ull span:after {
+  content: '\00bb';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+
+.btn-ull:hover span {
+  padding-right: 15px;
+}
+
+.btn-ull:hover span:after {
+  opacity: 1;
+  right: 0;
+}
+
+.btn-cancel {
+  display: inline-block !important;
+  border-radius: 6px !important;
+  background-color: #8f8f8f !important;
+  border: none;
+  color: #FFFFFF !important;
+  text-align: center;
+  width: auto;
+  transition: all 0.5s;
+  cursor: pointer;
+}
+
+.btn-cancel:hover {
+  background-color: #505050 !important;
+}
+
+.btn-cancel span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.btn-cancel span:after {
+  content: '\1F5D9';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  left: 100%;
+  margin-left: -18px;
+  transition: 0.5s;
+  padding-left: 0.5rem; /* or margin-left */
+}
+
+.btn-cancel:hover span {
+  padding-right: 15px;
+}
+
+.btn-cancel:hover span:after {
+  opacity: 1;
+  right: 0;
+}
+
+.btn-ullSave {
+  display: inline-block !important;
+  border-radius: 6px !important;
+  background-color: #5c068c !important;
+  border: none;
+  color: #FFFFFF !important;
+  text-align: center;
+  width: auto;
+  transition: all 0.5s;
+  cursor: pointer;
+}
+
+.btn-ullSave:hover {
+  background-color: #005000 !important;
+}
+
+.btn-ullSave span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.btn-ullSave span:after {
+  content: '\2713';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  left: 100%;
+  margin-left: -18px;
+  transition: 0.5s;
+  padding-left: 0.5rem; /* or margin-left */
+}
+
+.btn-ullSave:hover span {
+  padding-right: 15px;
+}
+
+.btn-ullSave:hover span:after {
+  opacity: 1;
+  right: 0;
+}
+
+/* Botones */
+
+.botonUllDanger {
+  display: inline-block !important;
+  border-radius: 6px !important;
+  background-color: #5c068c !important;
+  border: none;
+  color: #FFFFFF;
+  text-align: center;
+  width: auto;
+  transition: all 0.5s;
+  cursor: pointer;
+}
+
+.botonUllDanger:hover {
+  background-color: #a80404 !important;
+}
+
+.botonUllDanger span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.botonUllDanger span:after {
+  content: '\1F5D9';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  left: 100%;
+  margin-left: -18px;
+  transition: 0.5s;
+  padding-left: 0.5rem; /* or margin-left */
+}
+
+.botonUllDanger:hover span {
+  padding-right: 15px;
+}
+
+.botonUllDanger:hover span:after {
+  opacity: 1;
+  right: 0;
+}
+
+.botonUllEdit {
+  display: inline-block !important;
+  border-radius: 6px !important;
+  background-color: #5c068c !important;
+  border: none;
+  color: #FFFFFF;
+  text-align: center;
+  width: auto;
+  transition: all 0.5s;
+  cursor: pointer;
+  margin-bottom: 15px;
+}
+
+.botonUllEdit:hover {
+  background-color: #3d035c !important;
+}
+
+.botonUllEdit span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.botonUllEdit span:after {
+  content: '\270E';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  left: 100%;
+  margin-left: -10px;
+  transition: 0.5s;
+}
+
+.botonUllEdit:hover span {
+  padding-right: 15px;
+}
+
+.botonUllEdit:hover span:after {
+  opacity: 1;
+  right: 0;
 }

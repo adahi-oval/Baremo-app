@@ -37,3 +37,29 @@
 .table-row:nth-child(odd) {
   background-color: #ffffff;
 }
+
+/* Botón añadir */
+.botonAdd {
+  background: #5c068c;
+  color: white;
+  border: none;
+  border-radius: 50% !important;
+  width: 55px !important;
+  height: 55px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 25px !important;
+  padding: 0;
+  line-height: 1;
+  transition: background-position 0.5s ease, color 0.5s ease;
+  background-image: linear-gradient(to right, #3e0079 50%, #5c068c 50%);
+  background-size: 200% 100%;
+  background-position: right bottom;
+}
+
+.botonAdd:hover {
+  background-position: left bottom;
+}
+
+

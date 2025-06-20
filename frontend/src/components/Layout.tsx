@@ -7,9 +7,9 @@ type LayoutProps = {
 };
 
 export const Layout = ({ children }: LayoutProps) => (
-  <div>
+  <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
     <Navbar />
-    <main style={{ minHeight: '100vh', padding: '2rem' }}>
+    <main style={{ flex: 1, padding: '2rem' }}>
       {children}
     </main>
     <Footer />

@@ -2,10 +2,11 @@ import api from "./axios";
 import type { IUser } from "./user";
 
 export interface IPublication {
-  _id: string;
+  _id?: string;
   pubType: string;
   title: string;
-  user: IUser;
+  user?: IUser;
+  researcherId?: number;
   year: number;
   score: number;
   complete: boolean;
@@ -89,9 +90,166 @@ export interface ITransference extends IPublication {
     | "n/a";
 }
 
+export type PubType =
+  | 'Article'
+  | 'Book'
+  | 'Award'
+  | 'Captacion'
+  | 'Catedra'
+  | 'Conference'
+  | 'Contract'
+  | 'Magazine'
+  | 'Organization'
+  | 'Project'
+  | 'Sexenio'
+  | 'Thesis'
+  | 'Transference';
+
+export const pubTypes: PubType[] = [
+  'Article',
+  'Book',
+  'Award',
+  'Captacion',
+  'Catedra',
+  'Conference',
+  'Contract',
+  'Magazine',
+  'Organization',
+  'Project',
+  'Sexenio',
+  'Thesis',
+  'Transference',
+];
+
 export type Merit = IArticle | IAward | IBook | ICaptacion | ICatedra | IConference | IContract | IMagazine | IOrganization | IProject | ISexenio | IThesis | ITransference;
+
+export type MeritFields = keyof (IArticle & IAward & IBook & ICaptacion & ICatedra & IConference & IContract & IMagazine & IOrganization & IProject & ISexenio & IThesis & ITransference);
+
+export const emptyMeritByType = (pubType: PubType): Merit => {
+  const base = {
+    title: '',
+    year: new Date().getFullYear(),
+    score: 0,
+    complete: false
+  };
+
+  switch (pubType) {
+    case 'Article':
+      return {
+        ...base,
+        pubType: 'Article',
+        index: 'n/a',
+        position: 'n/a',
+      };
+
+    case 'Book':
+      return {
+        ...base,
+        pubType: 'Book',
+        bookType: 'n/a',
+        publisher: '',
+        publisherPosition: 'n/a',
+        isbn: '',
+      };
+
+    case 'Award':
+      return {
+        ...base,
+        pubType: 'Award',
+        awardType: 'n/a',
+      };
+
+    case 'Captacion':
+      return {
+        ...base,
+        pubType: 'Captacion',
+        captacionType: 'n/a',
+      };
+
+    case 'Catedra':
+      return {
+        ...base,
+        pubType: 'Catedra',
+        catedraType: 'n/a',
+      };
+
+    case 'Conference':
+      return {
+        ...base,
+        pubType: 'Conference',
+        conferenceType: 'n/a',
+        contributionType: 'n/a',
+      };
+
+    case 'Contract':
+      return {
+        ...base,
+        pubType: 'Contract',
+        role: 'n/a',
+      };
+
+    case 'Magazine':
+      return {
+        ...base,
+        pubType: 'Magazine',
+      };
+
+    case 'Organization':
+      return {
+        ...base,
+        pubType: 'Organization',
+        organizationType: 'n/a',
+      };
+
+    case 'Project':
+      return {
+        ...base,
+        pubType: 'Project',
+        projectType: 'n/a',
+        role: 'n/a',
+      };
+
+    case 'Sexenio':
+      return {
+        ...base,
+        pubType: 'Sexenio',
+        active: false,
+      };
+
+    case 'Thesis':
+      return {
+        ...base,
+        pubType: 'Thesis',
+        thesisType: 'n/a',
+      };
+
+    case 'Transference':
+      return {
+        ...base,
+        pubType: 'Transference',
+        transferenceType: 'n/a',
+      };
+
+    default:
+      throw new Error(`Unknown pubType: ${pubType}`);
+  }
+};
+
+/* Funciones de coms con el backend */
 
 export async function getAllMerits(): Promise<Merit[]> {
   const res = await api.get("/merits");
   return res.data.merits;
 };
+
+export async function deleteMerit(id: string): Promise<string> {
+  const res = await api.delete(`/merits/${id}`);
+
+  return res.status === 200 ? res.data.message : res.data.error;
+}
+
+export async function createMerit(merit: Merit): Promise<string> {
+  const res = await api.post('/merits', {merit: merit});
+
+  return res.status === 201 ? res.data.id : res.data.error;
+}

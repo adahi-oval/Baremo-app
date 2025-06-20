@@ -42,7 +42,14 @@ const CustomNavbar = () => {
               >
                 <NavDropdown.Item as={Link} to="/profile">Mi perfil</NavDropdown.Item>
                 <NavDropdown.Divider />
-                <NavDropdown.Item onClick={logout}>Cerrar sesión</NavDropdown.Item>
+                <NavDropdown.Item
+                  onClick={() => {
+                  logout();
+                  window.location.href = '/';
+                  }}
+                >
+                  Cerrar sesión
+                </NavDropdown.Item>
               </NavDropdown>
             )}
           </Nav>

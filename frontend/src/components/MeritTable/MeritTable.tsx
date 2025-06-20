@@ -102,6 +102,12 @@ const MeritTable = () => {
                 ))}
                 </Row>
             ))}
+
+            <Row className=" d-flex justify-content-end mt-4">
+                <button className="botonAdd" onClick={() => {navigate('/merits/add')}}>
+                    <i className="bi bi-plus" style={{ background: "transparent", color: "white" }}></i>
+                </button>
+            </Row>
             </Container>
         </Container>
     );
