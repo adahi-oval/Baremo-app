@@ -7,5 +7,6 @@ export enum MeritTypes {
   Project = "project",
   Sexenio = "sexenio",
   Thesis = "thesis",
-  Transference = "transference"
+  Transference = "transference",
+  Organization = "organization"
 }

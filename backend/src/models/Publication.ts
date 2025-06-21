@@ -18,6 +18,7 @@ export interface IPublicationMethods extends Model<IPublication> {
   findCompleteMeritsByResearcherId(researcherId: number): Promise<IPublication[] | null>;
   findIncompleteMeritsByResearcherId(researcherId: number): Promise<IPublication[] | null>;
   findAllActiveMeritsByResearcherId(researcherId: number): Promise<IPublication[] | null>;
+  findAllLast3YearsMeritsByResearcherId(researcherId: number): Promise<IPublication[] | null>;
   calculateTotalScoreByResearcherId(researcherId:number): Promise<number>;
 }
 
@@ -72,6 +73,13 @@ publicationSchema.statics.findAllActiveMeritsByResearcherId = async function (re
   const currentYear: number = new Date(Date.now()).getFullYear();
 
   return this.find({ user: user, year: { $in: [currentYear - 1, currentYear] } });
+}
+
+publicationSchema.statics.findAllLast3YearsMeritsByResearcherId = async function (researcherId: number): Promise<IPublication[] | null> {
+  const user = await User.findIdByResearcherId(researcherId);
+  const currentYear: number = new Date(Date.now()).getFullYear();
+
+  return this.find({ user: user, year: { $gte: currentYear - 2, $lte: currentYear } });
 }
 
 // pre save hook para determinar si está o no completa la publicación

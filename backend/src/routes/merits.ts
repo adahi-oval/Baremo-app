@@ -122,7 +122,7 @@ meritRouter.post("/merits", async (req, res) => {
     }
 
   } catch (err) {
-    res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
+    res.status(200).json({ error: err instanceof Error ? err.message : "Unknown error" });
   }
 });
 

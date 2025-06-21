@@ -11,6 +11,7 @@ import { Captacion } from "../models/merits/Captacion";
 import { User } from "../models/User";
 import { MeritTypes } from "../types/MeritTypes";
 import { MeritData } from "../types/MeritData";
+import { Organization } from "../models/merits/Organization";
 
 export interface CreatorResponse {
     complete: boolean,
@@ -123,6 +124,16 @@ export const meritCreator = async (data: MeritData): Promise<CreatorResponse | n
                     transferenceType: data.transferenceType,
                 });
                 return { complete: transference.complete, _id: transference._id as string };
+            }
+
+            case MeritTypes.Organization: {
+                const organization = await Organization.create({
+                    user: user,
+                    title: data.title,
+                    year: data.year,
+                    organizationType: data.organizationType,
+                });
+                return { complete: organization.complete, _id: organization._id as string };
             }
 
             default:

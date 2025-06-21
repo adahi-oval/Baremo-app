@@ -24,11 +24,17 @@ type MeritTypeMap = {
 };
 
 // Se le pasa researcherId y devuelve su puntuación total.
-export const userScorer = async (researcherId: number): Promise<number> => {
+export const userScorer = async (researcherId: number, average: boolean): Promise<number> => {
   const user: IUser | null = await User.findByResearcherIdPrivate(researcherId);
   if(!user) {return -1;}
   
-  const merits = await Publication.findAllActiveMeritsByResearcherId(researcherId);
+  let merits;
+  if (average) {
+    merits = await Publication.findAllLast3YearsMeritsByResearcherId(researcherId);
+  } else {
+    merits = await Publication.findAllActiveMeritsByResearcherId(researcherId);
+  }
+
   if(!merits) {return -1;}
 
   const splitMerits = splitMeritsByType(merits);  

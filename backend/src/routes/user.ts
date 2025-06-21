@@ -19,7 +19,7 @@ userRouter.get("/user/:researcherId", async (req, res) => {
         }
         
         const user = await User.findOne({researcherId});
-        const userScore = await userScorer(researcherId);
+        const userScore = await userScorer(researcherId, false);
 
         if (!user) {
             return res.status(404).json({ error: "User not found" });
@@ -45,7 +45,7 @@ userRouter.get("/users", async (req, res) => {
             return res.status(404).json({ error: "No users found" });
         }
 
-        res.status(200).json({ "users": users });
+        res.status(200).json({ users: users });
     } catch (err) {
         if (err instanceof Error) {
             res.status(400).json({ error: err.message });
@@ -62,8 +62,46 @@ userRouter.get("/user/:researcherId/score", async (req, res) => {
     if (isNaN(researcherId)) return res.status(400).json({ error: 'Invalid researcher ID' });
 
     try {
-        const totalScore = await userScorer(researcherId);
+        const totalScore = await userScorer(researcherId, false);
         return res.json({ researcherId, totalScore });
+    } catch (err) {
+        res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
+    }
+});
+
+// GET /users/score
+// Todos los usuarios y sus puntuaciones
+userRouter.get("/users/score", async (req, res) => {
+    try {
+        const users = await User.find();
+
+        if (!users || users.length === 0) {
+            return res.status(404).json({ error: "No users found" });
+        }
+
+        const usersWithScores = await Promise.all(
+            users.map(async (user) => {
+                const totalScore = await userScorer(user.researcherId, false);
+                return {...user.toObject(), totalScore};
+            })
+        );
+
+        return res.json({users: usersWithScores});
+    } catch (err) {
+        res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
+    }
+});
+
+// GET /users/score/average
+// Media de puntuacion de los últimos 3 años
+userRouter.get("/user/:researcherId/score/average", async (req, res) => {
+    try {
+        const researcherId = Number(req.params.researcherId);
+        if (isNaN(researcherId)) return res.status(400).json({ error: 'Invalid researcher ID' });
+
+        const averageScore = (await userScorer(researcherId, true)) / 3;
+
+        return res.json({averageScore: averageScore});
     } catch (err) {
         res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
     }
