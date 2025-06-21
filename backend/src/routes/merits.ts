@@ -84,13 +84,13 @@ meritRouter.get("/merits/:researcherId", async (req, res) => {
     if (status) baseQuery.complete = status === "complete";
     if (year) baseQuery.year = parseInt(year);
 
-    const merits = await Publication.find(baseQuery);
+    const merits = await Publication.find(baseQuery).populate("user", "-password -createdAt -updatedAt -__v -_id");
 
     if (!merits || merits.length === 0) {
       return res.status(404).json({ error: "No merits found for this researcher" });
     }
 
-    res.status(200).json({ merits });
+    res.status(200).json({ merits: merits });
   } catch (err) {
     res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
   }

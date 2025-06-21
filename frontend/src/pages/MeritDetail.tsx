@@ -27,7 +27,7 @@ const renderAdditionalFields = (merit: Merit) => {
         <>
           <Row className="mb-3">
             <Col md={6} className="d-flex justify-content-center">
-              <p><strong>{merit.bookType}</strong></p>
+              <p><strong>Tipo de Libro: </strong>{merit.bookType}</p>
             </Col>
 
             <Col md={6} className="d-flex justify-content-center">

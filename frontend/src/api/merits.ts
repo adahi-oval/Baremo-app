@@ -242,6 +242,12 @@ export async function getAllMerits(): Promise<Merit[]> {
   return res.data.merits;
 };
 
+export async function getUserMerits(researcherId: number): Promise<Merit[]> {
+  const res = await api.get(`/merits/${researcherId}`)
+
+  return res.data.merits;
+}
+
 export async function deleteMerit(id: string): Promise<string> {
   const res = await api.delete(`/merits/${id}`);
 
@@ -249,7 +255,7 @@ export async function deleteMerit(id: string): Promise<string> {
 }
 
 export async function createMerit(merit: Merit): Promise<string> {
-  const res = await api.post('/merits', {merit: merit});
+  const res = await api.post('/merits', { merit: merit });
 
-  return res.status === 201 ? res.data.id : res.data.error;
+  return res.status === 201 ? res.data.id : `Error: ${res.data.error}`;
 }

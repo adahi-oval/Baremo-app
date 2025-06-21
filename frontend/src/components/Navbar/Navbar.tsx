@@ -1,5 +1,5 @@
 import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import logo from '../../assets/logo-blanco-ull.svg';
 import loginLogo from '../../assets/avatar.svg';
 import './Navbar.css';
@@ -7,6 +7,7 @@ import { useAuth } from '../AuthContext';
 
 const CustomNavbar = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <Navbar expand="lg" className="custom-navbar" variant='dark'>
@@ -27,32 +28,35 @@ const CustomNavbar = () => {
             <Nav.Link as={Link} to="/users" className="custom-link">Usuarios</Nav.Link>
           </Nav>
           
-          <Nav className="ms-auto login-nav">
-            {!user ? (
-              <Nav.Link as={Link} to="/login">
-                <img src={loginLogo} height="30" alt="Login" />
-              </Nav.Link>
-            ) : (
-              <NavDropdown
-                title={
-                  <img src={loginLogo} height="30" alt="User" />
-                }
-                align="end"
-                id="user-dropdown"
-              >
-                <NavDropdown.Item as={Link} to="/profile">Mi perfil</NavDropdown.Item>
-                <NavDropdown.Divider />
-                <NavDropdown.Item
-                  onClick={() => {
+          {!user ? (
+            <Nav.Link
+              className='custom-link'
+              onClick={() => {
+                navigate('/login', { state: { from: window.location.pathname }, replace: true });
+              }}
+            >
+              Iniciar sesión
+            </Nav.Link>
+          ) : (
+            <NavDropdown
+              title={
+                <img src={loginLogo} height="30" alt="User" />
+              }
+              align="end"
+              id="user-dropdown"
+            >
+              <NavDropdown.Item as={Link} to={`/user/${user.researcherId}`}>Mi perfil</NavDropdown.Item>
+              <NavDropdown.Divider />
+              <NavDropdown.Item
+                onClick={() => {
                   logout();
                   window.location.href = '/';
-                  }}
-                >
-                  Cerrar sesión
-                </NavDropdown.Item>
-              </NavDropdown>
-            )}
-          </Nav>
+                }}
+              >
+                Cerrar sesión
+              </NavDropdown.Item>
+            </NavDropdown>
+          )}
 
         </Navbar.Collapse>
       </Container>

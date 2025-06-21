@@ -1,6 +1,5 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
-import { Spinner } from 'react-bootstrap';
 import LoadingSpinner from './LoadingSpinner';
 
 const ProtectedRoute = ({
@@ -14,7 +13,7 @@ const ProtectedRoute = ({
 
   if (loading) return <LoadingSpinner />;
 
-  if (!user) return <Navigate to="/login" />;
+  if (!user) return <Navigate to="/login" state={{ from: window.location.pathname }} replace />;
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
     return <Navigate to="/unauthorized" />;

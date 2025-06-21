@@ -1,5 +1,3 @@
-// src/pages/AddMerit.tsx
-
 import { useState } from 'react';
 import { Container, Row, Col, Card, Alert, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
@@ -31,9 +29,17 @@ const AddMerit = () => {
 
     try {
       const newMerit = await createMerit(merit);
-      navigate(`/merit/${newMerit}`);
+      if (newMerit.includes("Error:")) {
+        setError(newMerit);
+      } else {
+        navigate(`/merit/${newMerit}`);
+      }
     } catch (err) {
-      setError('No se pudo crear el mérito.');
+      if (err instanceof Error && err.message != undefined) {
+        setError(err.message)
+      } else {
+        setError('No se pudo crear el mérito.');
+      }
     }
   };
 
@@ -128,7 +134,7 @@ const AddMerit = () => {
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="isbn">
-              <Form.Label>ISBN</Form.Label>
+              <Form.Label>ISBN (Opcional)</Form.Label>
               <Form.Control
                 type="text"
                 value={merit.isbn || ''}

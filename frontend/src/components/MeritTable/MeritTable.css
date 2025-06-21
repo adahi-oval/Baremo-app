@@ -20,8 +20,54 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1) !important;
 }
 
+.halfCompleteBadge {
+  background: linear-gradient(to right, #008cff, #00c2e4) !important; /* Green gradient */
+  color: white !important;
+  padding: 3px 8px !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  font-size: 0.75rem !important;
+  display: inline-block !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.completeBadgeFilter {
+  background: linear-gradient(to right, #38b000, #04a5a5) !important; /* Green gradient */
+  color: white !important;
+  padding: 3px 8px !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  font-size: 0.75rem !important;
+  display: inline-block !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.completeBadgeFilter:hover {
+  background: linear-gradient(to right, #267a00, #037272) !important;
+}
+
+.incompleteBadgeFilter {
+  background: linear-gradient(to right, #d00000, #df8209) !important; /* Red gradient */
+  color: white !important;
+  padding: 3px 8px !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  font-size: 0.75rem !important;
+  display: inline-block !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.incompleteBadgeFilter:hover {
+  background: linear-gradient(to right, #a30000, #a76208) !important;
+}
+
 .table-row {
-  border-bottom: 1px solid #ccc; /* Row divider */
+  border-bottom: 1px solid #ccc;
+  padding: 0.5rem 0;
+}
+
+.table-row-header {
+  border-bottom: 1px solid #ccc;
   padding: 0.5rem 0;
 }
 
@@ -29,13 +75,16 @@
   padding: 0.5rem;
 }
 
-/* Alternating column background */
 .table-row:nth-child(even) {
   background-color: #f3f3f3;
 }
 
 .table-row:nth-child(odd) {
   background-color: #ffffff;
+}
+
+.table-row:hover {
+  background-color: #e4e4e4;
 }
 
 /* Botón añadir */

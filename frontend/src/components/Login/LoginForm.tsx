@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button, Container, Form, Card, Row, Col, Alert } from 'react-bootstrap';
+import Divider from '../Divider';
 
 type LoginFormProps = {
   onLogin: (email: string, password: string) => void;
@@ -30,6 +31,7 @@ export const LoginForm = ({ onLogin, error }: LoginFormProps) => {
           <Card className="shadow-lg border-1">
             <Card.Body className="p-4">
               <h2 className="text-center mb-4">Iniciar Sesión</h2>
+              <Divider />
               {errorF && <Alert variant="danger">{errorF}</Alert>}
               {error && <Alert variant="danger">{error}</Alert>}
 
@@ -54,11 +56,18 @@ export const LoginForm = ({ onLogin, error }: LoginFormProps) => {
                   />
                 </Form.Group>
 
-                <div className="d-grid">
-                  <Button variant="ull" type="submit" size="lg">
+                <div className='d-flex justify-content-center mt-5'>
+                  <div style={{ width: '70%', display: 'flex', justifyContent: 'space-between' }}>
+                    <Button variant="ull" type="submit">
                     <span>Iniciar sesión</span>
-                  </Button>
+                    </Button>
+
+                    <Button variant='cancel' onClick={() => { window.location.href = '/'; }}>
+                      <span>Volver a Inicio</span>
+                    </Button>
+                  </div>
                 </div>
+
               </Form>
             </Card.Body>
           </Card>
