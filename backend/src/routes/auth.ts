@@ -29,7 +29,6 @@ authRouter.post('/login', async (req, res) => {
     const token = jwt.sign(
       {
         id: user._id,
-        username: user.username,
         fullName: user.fullName,
         email: user.email,
         researcherId: user.researcherId,

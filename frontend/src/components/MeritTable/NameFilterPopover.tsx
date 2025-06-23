@@ -6,7 +6,7 @@ import {
 } from 'react-bootstrap';
 import { useSearchParams } from 'react-router-dom';
 
-const statuses = ['cumple', 'incumple'];
+const statuses = ['cumple', 'media','incumple'];
 
 interface FilterPopoverProps {
     columnFilters: any[];
@@ -24,7 +24,15 @@ const StatusItem: React.FC<StatusItemProps> = ({ status, columnFilters, setColum
 
     const handleClick = () => {
         const newFilters = columnFilters.filter(f => f.id !== 'complete');
-        const updatedFilters = [...newFilters, { id: 'totalScore', value: status === "cumple" }];
+        let value;
+        if (status === "cumple") {
+            value = "true";
+        } else if (status === "media") {
+            value = "avg";
+        } else {
+            value = "false";
+        }
+        const updatedFilters = [...newFilters, { id: 'totalScore', value: value }];
         setColumnFilters(updatedFilters);
 
         const updatedParams: Record<string, string> = {};
@@ -44,7 +52,7 @@ const StatusItem: React.FC<StatusItemProps> = ({ status, columnFilters, setColum
         badgeClass = 'incompleteBadgeFilter';
         label = 'Incumple';
     } else if (status === 'media') {
-        badgeClass = 'halfCompleteBadge';
+        badgeClass = 'halfCompleteBadgeFilter';
         label = 'Cumple Media';
     }
 

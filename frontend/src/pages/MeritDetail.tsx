@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import type { Merit } from "../api/merits"
 import { getMeritById } from "../api/meritDetail";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { Container, Card, Row, Col, Badge, Button } from "react-bootstrap";
 import '../components/MeritTable/MeritTable.css';
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -178,6 +178,7 @@ const MeritDetail = () => {
   const [merit, setMerit] = useState<Merit>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getMerit = async () => {
@@ -220,8 +221,11 @@ const MeritDetail = () => {
 
           <Row className="mb-3">
             <Col md={6} className="d-flex justify-content-center">
-              <div className="text-start">
-                <p><strong>Usuario:</strong> {merit.user!.fullName}</p>
+              <div className="text-start" onClick={() => navigate(`/user/${merit.user!.researcherId}`)}>
+                <p>
+                  <strong>Usuario:</strong>{" "}
+                  <span className="user-link">{merit.user!.fullName}</span>
+                </p>
               </div>
             </Col>
 

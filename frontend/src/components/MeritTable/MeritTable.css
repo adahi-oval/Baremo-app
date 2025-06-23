@@ -61,6 +61,21 @@
   background: linear-gradient(to right, #a30000, #a76208) !important;
 }
 
+.halfCompleteBadgeFilter {
+  background: linear-gradient(to right, #008cff, #00c2e4) !important; /* Red gradient */
+  color: white !important;
+  padding: 3px 8px !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  font-size: 0.75rem !important;
+  display: inline-block !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.halfCompleteBadgeFilter:hover {
+  background: linear-gradient(to right, #0062b3, #0091aa) !important;
+}
+
 .table-row {
   border-bottom: 1px solid #ccc;
   padding: 0.5rem 0;

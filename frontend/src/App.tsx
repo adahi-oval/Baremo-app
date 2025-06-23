@@ -10,6 +10,7 @@ import AddMerit from './pages/AddMerit';
 import Unauthorized from './pages/Unauthorized';
 import AdminUsersPage from './pages/AdminUsers';
 import UserPage from './pages/UserPage';
+import AddUser from './pages/AddUser';
 
 const App = () => (
   <Router>
@@ -18,6 +19,7 @@ const App = () => (
         <Route path="/" element={<Home />} />
         <Route path="/users" element={<AdminUsersPage />} />
         <Route path="/user/:researcherId" element={<UserPage />} />
+        <Route path="/user/add" element={<AddUser />} />
 
         <Route path="/merits" element={<Merits />} />
         <Route path='/merits/add' element={<AddMerit />} />

@@ -7,6 +7,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import Divider from '../components/Divider';
 import NameFilters from '../components/MeritTable/NameFilters';
 import NameFilterPopover from '../components/MeritTable/NameFilterPopover';
+import UserScorePieChart from '../components/Charts/UsersStatusPieChart';
 
 const columnHelper = createColumnHelper<IUser>();
 
@@ -24,7 +25,12 @@ const columns = [
     cell: info => info.getValue(),
     filterFn: (row, columnId, filterValue) => {
       const value = row.getValue(columnId) as number;
-      return filterValue ? value >= 8 : value < 8;
+
+      if (filterValue === 'true') return value >= 8;
+      if (filterValue === 'avg') return value < 8 && (row.original.averageScore ?? 0) >= 8;
+      if (filterValue === 'false') return value < 8 && (row.original.averageScore ?? 0) < 8;
+
+      return true;
     }
   }),
   columnHelper.display({
@@ -76,7 +82,6 @@ const AdminUsersPage = () => {
             researcherId: u.researcherId,
             totalScore: (u as any).totalScore ?? 0,
             averageScore: (u as any).averageScore ?? 0,
-            username: u.username,
             email: u.email,
             institutes: u.institutes,
           }))
@@ -114,6 +119,26 @@ const AdminUsersPage = () => {
           </Col>
         </Row>
         <Container>
+          <Row className="justify-content-center mb-4">
+            <Col md={3}>
+              <UserScorePieChart
+                users={data}
+                onSegmentClick={(status) => {
+                  setColumnFilters((prev) => {
+                    const otherFilters = prev.filter(f => f.id !== 'badge');
+                    if (status === 'Cumple') {
+                      return [...otherFilters, { id: 'totalScore', value: 'true' }];
+                    } else if (status === 'Cumple Media') {
+                      return [...otherFilters, { id: 'totalScore', value: 'avg' }];
+                    } else if (status === 'Incumple') {
+                      return [...otherFilters, { id: 'totalScore', value: 'false' }];
+                    }
+                    return otherFilters;
+                  });
+                }}
+              />
+            </Col>
+          </Row>
           <Stack direction="horizontal">
             <NameFilters
               columnFilters={columnFilters}
@@ -123,6 +148,16 @@ const AdminUsersPage = () => {
               columnFilters={columnFilters}
               setColumnFilters={setColumnFilters}
             />
+            <Button
+              variant="outline-secondary"
+              className="ms-2"
+              onClick={() => {
+                setColumnFilters([]);
+                setSearchParams({});
+              }}
+            >
+              Limpiar
+            </Button>
           </Stack>
           <Row>
             <Col>
@@ -152,24 +187,28 @@ const AdminUsersPage = () => {
               </Container>
             </Col>
           </Row>
-
-          <Container className="mt-2">
-            <p>Página {table.getState().pagination.pageIndex + 1} de {table.getPageCount()}</p>
-            <ButtonGroup size="sm" is="attached">
-              <Button
-                onClick={() => table.getCanPreviousPage() ? table.previousPage() : ""}
-                variant="light"
-              >
-                {"<"}
-              </Button>
-              <Button
-                onClick={() => table.getCanNextPage() ? table.nextPage() : ""}
-                variant="light"
-              >
-                {">"}
-              </Button>
-            </ButtonGroup>
-          </Container>
+          <Stack direction='horizontal'>
+            <Container className="mt-2">
+              <p>Página {table.getState().pagination.pageIndex + 1} de {table.getPageCount()}</p>
+              <ButtonGroup size="sm" is="attached">
+                <Button
+                  onClick={() => table.getCanPreviousPage() ? table.previousPage() : ""}
+                  variant="light"
+                >
+                  {"<"}
+                </Button>
+                <Button
+                  onClick={() => table.getCanNextPage() ? table.nextPage() : ""}
+                  variant="light"
+                >
+                  {">"}
+                </Button>
+              </ButtonGroup>
+            </Container>
+            <button className="botonAdd" onClick={() => { navigate('/user/add') }}>
+              <i className="bi bi-plus" style={{ background: "transparent", color: "white" }}></i>
+            </button>
+          </Stack>
         </Container>
 
 

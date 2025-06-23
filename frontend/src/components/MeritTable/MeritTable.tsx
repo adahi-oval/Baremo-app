@@ -7,10 +7,12 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import ProtectedRoute from "../ProtectedRoute";
 import Filters from "./Filters";
 import FilterPopover from "./FilterPopover";
+import MeritStatusPieChart from "../Charts/MeritStatusPieChart";
 
 interface MeritTableProps {
   mode: "all" | "user";
   researcherId?: number;
+  merits?: Merit[];
 }
 
 const columns = [
@@ -60,8 +62,8 @@ const columns = [
   },
 ]
 
-const MeritTable = ({ mode, researcherId }: MeritTableProps) => {
-  const [data, setData] = useState<Merit[]>([]);
+const MeritTable = ({ mode, researcherId, merits }: MeritTableProps) => {
+  const [data, setData] = useState<Merit[]>(merits ?? []);
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [columnFilters, setColumnFilters] = useState<any[]>(() => {
@@ -79,18 +81,24 @@ const MeritTable = ({ mode, researcherId }: MeritTableProps) => {
     return filtersFromParams;
   });
 
+
   useEffect(() => {
+    if (merits) {
+      setData(merits);
+      return;
+    }
+
     const getMerits = async () => {
       try {
-        const merits = mode === "all" ? await getAllMerits() : await getUserMerits(researcherId!);
-        setData(merits);
+        const meritsFromBackend = mode === "all" ? await getAllMerits() : await getUserMerits(researcherId!);
+        setData(meritsFromBackend);
       } catch (err) {
-        console.log('Failed to get all merits.')
+        console.log('Failed to get all merits.');
       }
     };
 
     getMerits();
-  }, []);
+  }, [merits, mode, researcherId]);
 
   useEffect(() => {
     const newParams: Record<string, string> = {};
@@ -117,6 +125,24 @@ const MeritTable = ({ mode, researcherId }: MeritTableProps) => {
   return (
     <ProtectedRoute allowedRoles={["admin"]}>
       <Container>
+        <Row className=" justify-content-center mb-4">
+          <Col md={3}>
+            <MeritStatusPieChart
+              merits={data}
+              onSegmentClick={(status) => {
+                setColumnFilters(prev => {
+                  const otherFilters = prev.filter(f => f.id !== 'complete');
+                  if (status === 'Completo') {
+                    return [...otherFilters, { id: 'complete', value: true }];
+                  } else if (status === 'Incompleto') {
+                    return [...otherFilters, { id: 'complete', value: false }];
+                  }
+                  return otherFilters;
+                });
+              }}
+            />
+          </Col>
+        </Row>
         <Stack direction="horizontal">
           <Filters
             columnFilters={columnFilters}
@@ -126,6 +152,16 @@ const MeritTable = ({ mode, researcherId }: MeritTableProps) => {
             columnFilters={columnFilters}
             setColumnFilters={setColumnFilters}
           />
+          <Button
+            variant="outline-secondary"
+            className="ms-2"
+            onClick={() => {
+              setColumnFilters([]);
+              setSearchParams({});
+            }}
+          >
+            Limpiar
+          </Button>
         </Stack>
 
         <Container className="table">

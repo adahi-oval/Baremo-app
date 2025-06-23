@@ -1,10 +1,11 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { getCurrentUser, logout as apiLogout } from '../api/auth';
 
-type User = {
+export type User = {
   fullName: string;
   researcherId: number;
   email: string;
+  password?: string;
   role: string;
 };
 

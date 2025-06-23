@@ -1,8 +1,8 @@
+import type { User } from '../components/AuthContext';
 import api from './axios';
 
 export interface IUser {
   _id: string;
-  username: string;
   fullName: string;
   email: string;
   researcherId: string;
@@ -10,6 +10,8 @@ export interface IUser {
   totalScore?: number | undefined;
   averageScore?: number | undefined;
 }
+
+export type Role = 'admin' | 'user';
 
 export const loginUser = async (username: string, password: string) => {
   const res = await api.post('/login', { username, password });
@@ -43,4 +45,10 @@ export async function getAllUsersScored(): Promise<IUser[]> {
   );
 
   return users;
+}
+
+export async function createUser(user: User): Promise<string> {
+  const res = await api.post('/user', { user: user });
+
+  return res.status === 201 ? res.data.id : `Error: ${res.data.error}`
 }

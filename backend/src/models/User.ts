@@ -2,7 +2,6 @@ import { Schema, model, Document, Model } from 'mongoose';
 import bcrypt from 'bcrypt';
 
 export interface IUser extends Document {
-  username: string;
   fullName: string;
   researcherId: number;
   email: string;
@@ -14,14 +13,11 @@ export interface IUser extends Document {
 
 // Se extiende la interfaz de Model<IUser> para poder mantener los métodos mongoose
 export interface IUserMethods extends Model<IUser> {
-  findByUsername(username: string): Promise<IUser | null>;
-  findByUsernameAll(username: string): Promise<IUser | null>;
   findByResearcherIdPrivate(researcherId: number): Promise<IUser | null>;
   findIdByResearcherId(researcherId: number): Promise<string | null>;
 }
 
 const userSchema = new Schema<IUser>({
-  username: { type: String, required: true, unique: true },
   fullName: { type: String, required: true },
   researcherId: { type: Number, required: true, unique: true },
   email: { type: String, required: true, unique: true },
@@ -31,14 +27,6 @@ const userSchema = new Schema<IUser>({
 }, {
   timestamps: true
 });
-
-userSchema.statics.findByUsername = async function (username: string): Promise<IUser | null> {
-  return this.findOne({ username: username }).select("-_id username fullname researcherId email institutes").exec();
-};
-
-userSchema.statics.findByUsernameAll = async function (username: string): Promise<IUser | null> {
-  return this.findOne({ username: username }).exec();
-};
 
 userSchema.statics.findByResearcherIdPrivate = async function (researcherId: number): Promise<IUser | null> {
   return this.findOne({ researcherId: researcherId }).exec();
