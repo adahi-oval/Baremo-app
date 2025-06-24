@@ -130,8 +130,8 @@ userRouter.post("/user", async (req, res) => {
 
 // DELETES
 
-// DELETE /user/:username
-// Deletes the user with the given username
+// DELETE /user/:researcherId   
+// Deletes the user with the given researcherId
 userRouter.delete("/user/:researcherId", async (req, res) => {
     try {
         const researcherId = req.params.researcherId;

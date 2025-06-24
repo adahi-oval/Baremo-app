@@ -11,18 +11,19 @@ import Unauthorized from './pages/Unauthorized';
 import AdminUsersPage from './pages/AdminUsers';
 import UserPage from './pages/UserPage';
 import AddUser from './pages/AddUser';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const App = () => (
   <Router>
     <Layout>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/users" element={<AdminUsersPage />} />
+        <Route path="/users" element={<ProtectedRoute allowedRoles={["admin"]}><AdminUsersPage /></ProtectedRoute>} />
         <Route path="/user/:researcherId" element={<UserPage />} />
-        <Route path="/user/add" element={<AddUser />} />
+        <Route path="/user/add" element={<ProtectedRoute allowedRoles={["admin"]}><AddUser /></ProtectedRoute>} />
 
-        <Route path="/merits" element={<Merits />} />
-        <Route path='/merits/add' element={<AddMerit />} />
+        <Route path="/merits" element={<ProtectedRoute allowedRoles={["admin"]}><Merits /></ProtectedRoute>} />
+        <Route path='/merits/add' element={<ProtectedRoute><AddMerit /></ProtectedRoute>} />
         
         <Route path='/merit/:id' element={<MeritDetail />} />
         <Route path='/merit/:id/edit' element={<EditMerit />} />

@@ -59,7 +59,7 @@ export const LoginForm = ({ onLogin, error }: LoginFormProps) => {
                 <div className='d-flex justify-content-center mt-5'>
                   <div style={{ width: '70%', display: 'flex', justifyContent: 'space-between' }}>
                     <Button variant="ull" type="submit">
-                    <span>Iniciar sesión</span>
+                      <span>Iniciar sesión</span>
                     </Button>
 
                     <Button variant='cancel' onClick={() => { window.location.href = '/'; }}>

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Button, ButtonGroup, Col, Container, Row, Stack } from "react-bootstrap";
 import './MeritTable.css';
 import { useNavigate, useSearchParams } from "react-router-dom";
-import ProtectedRoute from "../ProtectedRoute";
 import Filters from "./Filters";
 import FilterPopover from "./FilterPopover";
 import MeritStatusPieChart from "../Charts/MeritStatusPieChart";
@@ -123,96 +122,96 @@ const MeritTable = ({ mode, researcherId, merits }: MeritTableProps) => {
 
   console.log(table.getHeaderGroups());
   return (
-    <ProtectedRoute allowedRoles={["admin"]}>
-      <Container>
-        <Row className=" justify-content-center mb-4">
-          <Col md={3}>
-            <MeritStatusPieChart
-              merits={data}
-              onSegmentClick={(status) => {
-                setColumnFilters(prev => {
-                  const otherFilters = prev.filter(f => f.id !== 'complete');
-                  if (status === 'Completo') {
-                    return [...otherFilters, { id: 'complete', value: true }];
-                  } else if (status === 'Incompleto') {
-                    return [...otherFilters, { id: 'complete', value: false }];
-                  }
-                  return otherFilters;
-                });
-              }}
-            />
-          </Col>
-        </Row>
-        <Stack direction="horizontal">
-          <Filters
-            columnFilters={columnFilters}
-            setColumnFilters={setColumnFilters}
-          />
-          <FilterPopover
-            columnFilters={columnFilters}
-            setColumnFilters={setColumnFilters}
-          />
-          <Button
-            variant="outline-secondary"
-            className="ms-2"
-            onClick={() => {
-              setColumnFilters([]);
-              setSearchParams({});
+
+    <Container>
+      <Row className=" justify-content-center mb-4">
+        <Col md={3}>
+          <MeritStatusPieChart
+            merits={data}
+            onSegmentClick={(status) => {
+              setColumnFilters(prev => {
+                const otherFilters = prev.filter(f => f.id !== 'complete');
+                if (status === 'Completo') {
+                  return [...otherFilters, { id: 'complete', value: true }];
+                } else if (status === 'Incompleto') {
+                  return [...otherFilters, { id: 'complete', value: false }];
+                }
+                return otherFilters;
+              });
             }}
-          >
-            Limpiar
-          </Button>
+          />
+        </Col>
+      </Row>
+      <Stack direction="horizontal">
+        <Filters
+          columnFilters={columnFilters}
+          setColumnFilters={setColumnFilters}
+        />
+        <FilterPopover
+          columnFilters={columnFilters}
+          setColumnFilters={setColumnFilters}
+        />
+        <Button
+          variant="outline-secondary"
+          className="ms-2"
+          onClick={() => {
+            setColumnFilters([]);
+            setSearchParams({});
+          }}
+        >
+          Limpiar
+        </Button>
+      </Stack>
+
+      <Container className="table">
+        {table.getHeaderGroups().map(headerGroup => (
+          <Row key={headerGroup.id} className="table-row-header">
+            {headerGroup.headers.map(header => (
+              <Col key={header.id} className="table-cell">
+                <div style={{ position: "relative", fontWeight: "bold" }}>
+                  {typeof header.column.columnDef.header === "function"
+                    ? header.column.columnDef.header(header.getContext())
+                    : header.column.columnDef.header}
+                </div>
+              </Col>
+            ))}
+          </Row>
+        ))}
+        {table.getRowModel().rows.map(row => (
+          <Row key={row.id} className="table-row" onClick={() => { navigate(`/merit/${row.original._id}`) }} style={{ cursor: "pointer" }}>
+            {row.getVisibleCells().map(cell => (
+              <Col key={cell.id} className="table-cell">
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </Col>
+            ))}
+          </Row>
+        ))}
+
+        <Stack direction="horizontal">
+          <Container className="mt-2">
+            <p>Página {table.getState().pagination.pageIndex + 1} de {table.getPageCount()}</p>
+            <ButtonGroup size="sm" is="attached">
+              <Button
+                onClick={() => table.getCanPreviousPage() ? table.previousPage() : ""}
+                variant="light"
+              >
+                {"<"}
+              </Button>
+              <Button
+                onClick={() => table.getCanNextPage() ? table.nextPage() : ""}
+                variant="light"
+              >
+                {">"}
+              </Button>
+            </ButtonGroup>
+          </Container>
+          <button className="botonAdd" onClick={() => { navigate('/merits/add') }}>
+            <i className="bi bi-plus" style={{ background: "transparent", color: "white" }}></i>
+          </button>
         </Stack>
-
-        <Container className="table">
-          {table.getHeaderGroups().map(headerGroup => (
-            <Row key={headerGroup.id} className="table-row-header">
-              {headerGroup.headers.map(header => (
-                <Col key={header.id} className="table-cell">
-                  <div style={{ position: "relative", fontWeight: "bold" }}>
-                    {typeof header.column.columnDef.header === "function"
-                      ? header.column.columnDef.header(header.getContext())
-                      : header.column.columnDef.header}
-                  </div>
-                </Col>
-              ))}
-            </Row>
-          ))}
-          {table.getRowModel().rows.map(row => (
-            <Row key={row.id} className="table-row" onClick={() => { navigate(`/merit/${row.original._id}`) }} style={{ cursor: "pointer" }}>
-              {row.getVisibleCells().map(cell => (
-                <Col key={cell.id} className="table-cell">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </Col>
-              ))}
-            </Row>
-          ))}
-
-          <Stack direction="horizontal">
-            <Container className="mt-2">
-              <p>Página {table.getState().pagination.pageIndex + 1} de {table.getPageCount()}</p>
-              <ButtonGroup size="sm" is="attached">
-                <Button
-                  onClick={() => table.getCanPreviousPage() ? table.previousPage() : ""}
-                  variant="light"
-                >
-                  {"<"}
-                </Button>
-                <Button
-                  onClick={() => table.getCanNextPage() ? table.nextPage() : ""}
-                  variant="light"
-                >
-                  {">"}
-                </Button>
-              </ButtonGroup>
-            </Container>
-            <button className="botonAdd" onClick={() => { navigate('/merits/add') }}>
-              <i className="bi bi-plus" style={{ background: "transparent", color: "white" }}></i>
-            </button>
-          </Stack>
-        </Container>
       </Container>
-    </ProtectedRoute>
+    </Container>
+
 
   );
 
