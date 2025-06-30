@@ -82,7 +82,7 @@ publicationSchema.statics.findAllLast3YearsMeritsByResearcherId = async function
   return this.find({ user: user, year: { $gte: currentYear - 2, $lte: currentYear } });
 }
 
-// pre save hook para determinar si está o no completa la publicación
+// pre save hook para determinar si está o no completa la publicación y para puntuarla
 publicationSchema.pre('save', function (next) {
   const doc = this as IPublication;
 
