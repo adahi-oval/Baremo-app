@@ -3,6 +3,7 @@ import { User } from "../models/User";
 import { Publication } from "../models/Publication";
 import { userScorer } from "../services/userScorer";
 import bcrypt from "bcrypt";
+import { userLoader } from "../services/userLoader";
 
 const userRouter = Router();
 
@@ -127,6 +128,17 @@ userRouter.get("/user/:researcherId/score/average", async (req, res) => {
         const averageScore = (await userScorer(researcherId, true)) / 3;
 
         return res.json({averageScore: averageScore});
+    } catch (err) {
+        res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
+    }
+});
+
+userRouter.get("/users/load", async (req, res) => {
+    try {
+        
+        userLoader();
+
+        return res.json({message: "Users loaded succesfully"});
     } catch (err) {
         res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
     }

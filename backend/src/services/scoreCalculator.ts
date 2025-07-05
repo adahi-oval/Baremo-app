@@ -110,8 +110,11 @@ export const scoreCalculator = (data: any): number => {
                 isNational = false;
             } else if (conferenceType == "national") {
                 isNational = true;
-            } else {
-                throw new Error("Invalid Book Type")
+            } else if (conferenceType == "n/a") {
+                return 0;
+            } 
+            else {
+                return 0;
             }
 
             switch(contributionType.toLowerCase()) {

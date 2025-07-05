@@ -5,6 +5,7 @@ import { IPublication, Publication } from "../models/Publication";
 import { meritCreator } from "../services/meritCreator";
 import { User } from "../models/User";
 import { scoreCalculator } from "../services/scoreCalculator";
+import { dataLoader } from "../services/dataLoader";
 
 const meritRouter = Router();
 
@@ -90,6 +91,16 @@ meritRouter.get("/merits/:researcherId", async (req, res) => {
     }
 
     res.status(200).json({ merits: merits });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
+  }
+});
+
+meritRouter.get("/merits/load/data", async (req, res) => {
+  try {
+    dataLoader()
+
+    return res.status(201).json({message: "Merits loaded succesfully"})
   } catch (err) {
     res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
   }
