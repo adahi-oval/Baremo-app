@@ -92,6 +92,31 @@ userRouter.get("/users/score", async (req, res) => {
     }
 });
 
+// GET /institute/score
+// puntuación total del instituto
+userRouter.get("/institute/score", async (req, res) => {
+    try {
+        const users = await User.find();
+
+        if (!users || users.length === 0) {
+            return res.status(404).json({ error: "No users found" });
+        }
+
+        // Create an array of score Promises
+        const scorePromises = users.map(user => userScorer(user.researcherId, false));
+
+        // Wait for all promises to resolve
+        const scores = await Promise.all(scorePromises);
+
+        // Sum the scores
+        const instituteScore = scores.reduce((acc, score) => acc + score, 0);
+
+        return res.json({ instituteScore });
+    } catch (err) {
+        res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
+    }
+});
+
 // GET /users/score/average
 // Media de puntuacion de los últimos 3 años
 userRouter.get("/user/:researcherId/score/average", async (req, res) => {
@@ -114,6 +139,7 @@ userRouter.get("/user/:researcherId/score/average", async (req, res) => {
 userRouter.post("/user", async (req, res) => {
     try {
         let data = req.body.user;
+        if (!data) { return res.status(400).json({ error: "User not provided" })}
 
         const user = new User(data);
         await user.save();
@@ -131,7 +157,7 @@ userRouter.post("/user", async (req, res) => {
 // DELETES
 
 // DELETE /user/:researcherId   
-// Deletes the user with the given researcherId
+// Elimina el usuario por researcherId
 userRouter.delete("/user/:researcherId", async (req, res) => {
     try {
         const researcherId = req.params.researcherId;
@@ -162,7 +188,7 @@ userRouter.delete("/user/:researcherId", async (req, res) => {
 // PUT /user/:researcherId
 // Updates the user with the given researcherId
 userRouter.put("/user/:researcherId", async (req, res) => {
-    try {76
+    try {
         const researcherId = req.params.researcherId;
         const updates = req.body.updates;
 

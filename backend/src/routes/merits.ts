@@ -40,7 +40,6 @@ meritRouter.get("/merits", async (req, res) => {
 
 // GET /merit/:meritId
 // Gets a specific merit by id
-
 meritRouter.get("/merit/:meritId", async (req, res) => {
   try {
     const meritId = req.params.meritId as string;
@@ -96,7 +95,6 @@ meritRouter.get("/merits/:researcherId", async (req, res) => {
   }
 });
 
-
 // POSTS
 
 // POST /merits
@@ -122,7 +120,7 @@ meritRouter.post("/merits", async (req, res) => {
     }
 
   } catch (err) {
-    res.status(200).json({ error: err instanceof Error ? err.message : "Unknown error" });
+    res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
   }
 });
 
@@ -130,9 +128,9 @@ meritRouter.post("/merits", async (req, res) => {
 
 // PUT /merits/:id
 // Actualiza un mérito por id
-meritRouter.put("/merits/:id", async (req, res) => {
+meritRouter.put("/merits/:meritId", async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = req.params.meritId as string;
     const updates = req.body.updates;
     if(!updates) { res.status(404).json({error: "No updates provided."}) }
 

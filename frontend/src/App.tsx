@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Home } from './pages/Home';
+import Home from './pages/Home';
 import { Layout } from './components/Layout';
 import { Merits } from './pages/Merits';
 import MeritDetail from './pages/MeritDetail';
@@ -12,6 +12,7 @@ import AdminUsersPage from './pages/AdminUsers';
 import UserPage from './pages/UserPage';
 import AddUser from './pages/AddUser';
 import ProtectedRoute from './components/ProtectedRoute';
+import EditUser from './pages/EditUser';
 
 const App = () => (
   <Router>
@@ -21,6 +22,7 @@ const App = () => (
         <Route path="/users" element={<ProtectedRoute allowedRoles={["admin"]}><AdminUsersPage /></ProtectedRoute>} />
         <Route path="/user/:researcherId" element={<UserPage />} />
         <Route path="/user/add" element={<ProtectedRoute allowedRoles={["admin"]}><AddUser /></ProtectedRoute>} />
+        <Route path="/user/edit/:researcherId" element={<ProtectedRoute allowedRoles={["admin"]}><EditUser /></ProtectedRoute>} />
 
         <Route path="/merits" element={<ProtectedRoute allowedRoles={["admin"]}><Merits /></ProtectedRoute>} />
         <Route path='/merits/add' element={<ProtectedRoute><AddMerit /></ProtectedRoute>} />

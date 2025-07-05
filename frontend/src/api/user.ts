@@ -11,6 +11,13 @@ export interface IUser {
   averageScore?: number | undefined;
 }
 
+export interface UserUpdates {
+  fullName?: string;
+  email?: string;
+  password?: string;
+  role?: 'user' | 'admin';
+}
+
 export type Role = 'admin' | 'user';
 
 export const loginUser = async (username: string, password: string) => {
@@ -51,4 +58,10 @@ export async function createUser(user: User): Promise<string> {
   const res = await api.post('/user', { user: user });
 
   return res.status === 201 ? res.data.id : `Error: ${res.data.error}`
+}
+
+export async function updateUser(researcherId: number, updates: UserUpdates) {
+  const res = await api.put(`/user/${researcherId}`, {updates: updates});
+
+  return res.data;
 }

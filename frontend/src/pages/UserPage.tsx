@@ -1,4 +1,4 @@
-import { Col, Container, Row } from "react-bootstrap";
+import { Button, Col, Container, Row } from "react-bootstrap";
 import Divider from "../components/Divider";
 import MeritTable from "../components/MeritTable/MeritTable";
 import { useParams } from "react-router-dom";
@@ -30,6 +30,8 @@ const UserPage = () => {
                 <MeritTable mode="user" researcherId={Number(researcherId)}/>
             </Col>
         </Row>
+
+        <Button variant="ull" onClick={() => window.location.href = `/user/edit/${researcherId}`}>Editar Usuario</Button>
     </Container>
   );
 };

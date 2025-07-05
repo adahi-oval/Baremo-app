@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import authRouter from './routes/auth';
-import testRouter from './routes/test';
 import userRouter from './routes/user';
 import meritRouter from './routes/merits';
 import cookieParser from 'cookie-parser';

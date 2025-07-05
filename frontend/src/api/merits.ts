@@ -259,3 +259,9 @@ export async function createMerit(merit: Merit): Promise<string> {
 
   return res.status === 201 ? res.data.id : `Error: ${res.data.error}`;
 }
+
+export async function getInstituteScore(): Promise<string> {
+  const res = await api.get('/institute/score');
+
+  return res.status === 200 ? res.data.instituteScore : `Error: ${res.data.error}`;
+}
