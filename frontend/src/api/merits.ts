@@ -237,8 +237,8 @@ export const emptyMeritByType = (pubType: PubType): Merit => {
 
 /* Funciones de coms con el backend */
 
-export async function getAllMerits(): Promise<Merit[]> {
-  const res = await api.get("/merits");
+export async function getAllMerits(researcherId: number): Promise<Merit[]> {
+  const res = await api.get(`/merits/${researcherId}/institutes`);
   return res.data.merits;
 };
 
@@ -260,8 +260,8 @@ export async function createMerit(merit: Merit): Promise<string> {
   return res.status === 201 ? res.data.id : `Error: ${res.data.error}`;
 }
 
-export async function getInstituteScore(): Promise<string> {
-  const res = await api.get('/institute/score');
+export async function getInstituteScore(selectedInstitute: string): Promise<string> {
+  const res = await api.get(`/institute/score/${selectedInstitute}`);
 
   return res.status === 200 ? res.data.instituteScore : `Error: ${res.data.error}`;
 }

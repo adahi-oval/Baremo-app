@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useReactTable, createColumnHelper, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel } from '@tanstack/react-table';
 import { Container, Row, Col, ButtonGroup, Button, Stack } from 'react-bootstrap';
-import ProtectedRoute from '../components/ProtectedRoute';
-import { getAllUsersScored, type IUser } from '../api/user';
+import { getAllUsersScoredByInstitute, type IUser } from '../api/user';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Divider from '../components/Divider';
 import NameFilters from '../components/MeritTable/NameFilters';
 import NameFilterPopover from '../components/MeritTable/NameFilterPopover';
 import UserScorePieChart from '../components/Charts/UsersStatusPieChart';
+import { useAuth } from '../components/AuthContext';
 
 const columnHelper = createColumnHelper<IUser>();
 
@@ -17,7 +17,7 @@ const columns = [
     cell: info => info.getValue(),
   }),
   columnHelper.accessor('researcherId', {
-    header: 'ID de investigador',
+    header: 'ID de P.D.I.',
     cell: info => info.getValue(),
   }),
   columnHelper.accessor('totalScore', {
@@ -55,7 +55,9 @@ const columns = [
 const AdminUsersPage = () => {
   const [data, setData] = useState<IUser[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
+  const { user } = useAuth();
   const navigate = useNavigate();
+  const [institutes, setInstitutes] = useState<String>('');
 
   const [columnFilters, setColumnFilters] = useState<any[]>(() => {
     const filtersFromParams: any[] = [];
@@ -71,9 +73,19 @@ const AdminUsersPage = () => {
     }
     return filtersFromParams;
   });
+  
+  useEffect(() => {
+    if (user?.institutes) {
+      if (user.institutes.length === 2) {
+        setInstitutes(`${user.institutes[0]}, ${user.institutes[1]}`);
+      } else {
+        setInstitutes(user.institutes.join(', '));
+      }
+    }
+  }, [user]);
 
   useEffect(() => {
-    getAllUsersScored()
+    getAllUsersScoredByInstitute(user?.researcherId!)
       .then(users =>
         setData(
           users.map(u => ({
@@ -113,7 +125,8 @@ const AdminUsersPage = () => {
     <Container fluid className='py-5'>
       <Row className="justify-content-center text-center mb-4">
         <Col md={8}>
-          <h1 className="display-6 custom-title">Tabla de Usuarios</h1>
+          <h1 className="display-6 custom-title">Tabla de P.D.I.</h1>
+          <h3 className="display-8 custom-title">Instituto(s): {institutes}</h3>
           <Divider />
         </Col>
       </Row>

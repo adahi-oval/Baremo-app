@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import { Layout } from './components/Layout';
-import { Merits } from './pages/Merits';
+import Merits from './pages/Merits';
 import MeritDetail from './pages/MeritDetail';
 import LoginPage from './pages/Login';
 import EditMerit from './pages/EditMerit';

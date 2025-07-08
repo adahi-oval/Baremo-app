@@ -93,26 +93,86 @@ userRouter.get("/users/score", async (req, res) => {
     }
 });
 
-// GET /institute/score
-// puntuación total del instituto
-userRouter.get("/institute/score", async (req, res) => {
+// GET /users/score
+// Todos los usuarios y sus puntuaciones
+userRouter.get("/users/score/:researcherId", async (req, res) => {
     try {
-        const users = await User.find();
+        const researcherId = parseInt(req.params.researcherId as string);
+
+        const loggedUser = await User.findOne({researcherId});
+        if (!loggedUser) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        const institutes = loggedUser.institutes;
+        if (!institutes || institutes.length === 0) {
+            return res.status(400).json({ error: "User has no associated institutes" });
+        }
+
+        const users = await User.find({ institutes: { $in: institutes } })
 
         if (!users || users.length === 0) {
             return res.status(404).json({ error: "No users found" });
         }
 
-        // Create an array of score Promises
-        const scorePromises = users.map(user => userScorer(user.researcherId, false));
+        const usersWithScores = await Promise.all(
+            users.map(async (user) => {
+                const totalScore = await userScorer(user.researcherId, false);
+                return {...user.toObject(), totalScore};
+            })
+        );
 
-        // Wait for all promises to resolve
-        const scores = await Promise.all(scorePromises);
+        return res.json({users: usersWithScores});
+    } catch (err) {
+        res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
+    }
+});
 
-        // Sum the scores
-        const instituteScore = scores.reduce((acc, score) => acc + score, 0);
+// GET /institute/score
+// puntuación total del instituto
+userRouter.get("/institute/score/:selectedInstitute", async (req, res) => {
+  try {
+    const selectedInstitute = req.params.selectedInstitute;
 
-        return res.json({ instituteScore });
+    const users = await User.find({ institutes: { $in: [selectedInstitute] } });
+
+    if (users.length === 0) {
+      return res.json({instituteScore: 0});
+    }
+
+    const results = await Promise.allSettled(
+      users.map(user => userScorer(user.researcherId, false))
+    );
+
+    const instituteScore = results.reduce((acc, result) =>
+      result.status === 'fulfilled' ? acc + result.value : acc, 0
+    );
+
+    return res.json({ instituteScore });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
+  }
+});
+
+
+userRouter.get("/users/:researcherId/institute", async (req, res) => {
+    try {
+        const researcherId = parseInt(req.params.researcherId as string);
+
+        const loggedUser = await User.findOne({researcherId});
+        if (!loggedUser) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        const institutes = loggedUser.institutes;
+        if (!institutes || institutes.length === 0) {
+            return res.status(400).json({ error: "User has no associated institutes" });
+        }
+
+        const usersInInstitutes = await User.find({ institutes: { $in: institutes } })
+
+        res.status(200).json({users: usersInInstitutes});
+
     } catch (err) {
         res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
     }

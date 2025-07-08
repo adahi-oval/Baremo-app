@@ -11,7 +11,25 @@ const AddUser = () => {
   const [researcherId, setResearcherId] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [institutes, setInstitutes] = useState<string[]>([]);
   const [role, setRole] = useState<Role>('user');
+
+  const allowedInstitutes: { value: string; label: string }[] = [
+    { value: 'IUBO', label: 'Instituto Universitario de Bio-Orgánica Antonio González' },
+    { value: 'IUDR', label: 'Instituto Universitario de Desarrollo Regional' },
+    { value: 'IUDE', label: 'Instituto Universitario de la Empresa' },
+    { value: 'IUETSP', label: 'Instituto Universitario de Enfermedades Tropicales y Salud Pública de Canarias' },
+    { value: 'IUDEA', label: 'Instituto Universitario de Estudios Avanzados en Física Atómica Molecular y Fotónica' },
+    { value: 'IUEM', label: 'Instituto Universitario de Estudios de las Mujeres' },
+    { value: 'IUEMR', label: 'Instituto de Estudios Medievales y Renacentistas' },
+    { value: 'IUIST', label: 'Instituto Universitario de Investigación Social y Turismo' },
+    { value: 'IULAB', label: 'Instituto Universitario de Lingüística Andrés Bello' },
+    { value: 'IUNEURO', label: 'Instituto Universitario de Neurociencia' },
+    { value: 'IUMA', label: 'Instituto Universitario de Matemáticas y Aplicaciones' },
+    { value: 'IUMN', label: 'Instituto de Materiales y Nanotecnología' },
+    { value: 'IUTB', label: 'Instituto de Tecnologías Biomédicas' },
+  ];
+
 
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -31,6 +49,7 @@ const AddUser = () => {
         researcherId: Number(researcherId),
         password,
         role,
+        institutes,
       });
 
       if (typeof result === 'string' && result.startsWith('Error:')) {
@@ -106,6 +125,36 @@ const AddUser = () => {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
                   />
+                </Form.Group>
+
+                <Form.Group className="mb-4" controlId="institutes">
+                  <Form.Label>Institutos (máximo 2)</Form.Label>
+                  <div>
+                    {allowedInstitutes.map(({ value, label }) => (
+                      <Form.Check
+                        key={value}
+                        type="checkbox"
+                        id={`institute-${value}`}
+                        label={label}
+                        value={value}
+                        checked={institutes.includes(value)}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          if (checked) {
+                            if (institutes.length < 2) {
+                              setInstitutes([...institutes, value]);
+                            }
+                          } else {
+                            setInstitutes(institutes.filter((inst) => inst !== value));
+                          }
+                        }}
+                        disabled={!institutes.includes(value) && institutes.length >= 2}
+                      />
+                    ))}
+                  </div>
+                  {institutes.length > 2 && (
+                    <div className="text-danger mt-1">Solo puedes seleccionar hasta 2 institutos.</div>
+                  )}
                 </Form.Group>
 
                 <Form.Group className="mb-4" controlId="role">

@@ -10,7 +10,7 @@ import MeritStatusPieChart from "../Charts/MeritStatusPieChart";
 
 interface MeritTableProps {
   mode: "all" | "user";
-  researcherId?: number;
+  researcherId: number;
   merits?: Merit[];
 }
 
@@ -27,7 +27,7 @@ const columns = [
   },
   {
     accessorKey: "user",
-    header: "Investigador",
+    header: "P.D.I.",
     cell: (props: any) => {
       const user = props.getValue();
       return <p style={{ backgroundColor: "inherit" }}>{user?.fullName ?? "Unknown"}</p>
@@ -89,7 +89,7 @@ const MeritTable = ({ mode, researcherId, merits }: MeritTableProps) => {
 
     const getMerits = async () => {
       try {
-        const meritsFromBackend = mode === "all" ? await getAllMerits() : await getUserMerits(researcherId!);
+        const meritsFromBackend = mode === "all" ? await getAllMerits(researcherId) : await getUserMerits(researcherId);
         setData(meritsFromBackend);
       } catch (err) {
         console.log('Failed to get all merits.');

@@ -91,7 +91,6 @@ def get_publications_data(links, pub_type, year):
             n = 0
 
         total_publications.append(n)
-        time.sleep(2)
 
     indexes0 = [i for i, n in enumerate(total_publications) if n == 0]
     filtered_links = [l for i, l in enumerate(links) if i not in indexes0]
@@ -103,9 +102,7 @@ def get_publications_data(links, pub_type, year):
     for i, link in enumerate(filtered_links):
         print(f"15... {i+1}")
         all_publications.extend(get_publications(link, pub_type, year, filtered_counts[i]))
-        time.sleep(2)
         all_links.extend(get_publication_link(link, pub_type, year, filtered_counts[i]))
-        time.sleep(2)
 
     return indexes0, filtered_counts, all_publications, all_links
 
@@ -124,7 +121,6 @@ def create_df(indexes0, counts, pubs, extra):
     j = 0
     for i in range(len(filtered_names)):
         for pub in pubs[j: j + counts[i]]:
-            # Extract the year if the publication string starts with it
             year = pub.split(" - ")[0] if " - " in pub and pub[:4].isdigit() else None
             rows.append({
                 "Nombre": filtered_names[i],

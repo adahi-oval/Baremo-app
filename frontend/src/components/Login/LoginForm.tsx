@@ -31,6 +31,9 @@ export const LoginForm = ({ onLogin, error }: LoginFormProps) => {
           <Card className="shadow-lg border-1">
             <Card.Body className="p-4">
               <h2 className="text-center mb-4">Iniciar Sesión</h2>
+              <p className="lead text-muted mt-3 text-center">
+                Inicia sesión para continuar.
+              </p>
               <Divider />
               {errorF && <Alert variant="danger">{errorF}</Alert>}
               {error && <Alert variant="danger">{error}</Alert>}

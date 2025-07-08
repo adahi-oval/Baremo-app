@@ -6,7 +6,7 @@ export interface IUser extends Document {
   researcherId: number;
   email: string;
   password: string;
-  institutes?: string[];
+  institutes: string[];
   role: 'admin' | 'user';
   comparePassword(password: string): Promise<boolean>;
 }
@@ -17,16 +17,31 @@ export interface IUserMethods extends Model<IUser> {
   findIdByResearcherId(researcherId: number): Promise<string | null>;
 }
 
+const allowedInstitutes = ['IUBO', 'IUDR', 'IUDE', 'IUETSP', 'IUDEA', 'IUEM', 'IUEMR', 'IUIST', 'IULAB', 'IUNEURO', 'IUMA', 'IUMN', 'IUTB'];
+
 const userSchema = new Schema<IUser>({
   fullName: { type: String, required: true },
   researcherId: { type: Number, required: true, unique: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  role: { type: String, required: true, enum: ['admin', 'user'], default: 'user' },
-  institutes: { type: [String], default: [], maxlength: 2 }
+  role: {
+    type: String,
+    required: true,
+    enum: ['admin', 'user'],
+    default: 'user'
+  },
+  institutes: {
+    type: [String],
+    required: true,
+    validate: {
+      validator: (arr: string[]) => arr.length > 0 && arr.length <= 2 && arr.every(inst => allowedInstitutes.includes(inst)),
+      message: (props) => `Each institute must be one of: ${allowedInstitutes.join(', ')} and between 1–2 entries`
+    }
+  }
 }, {
   timestamps: true
 });
+
 
 userSchema.statics.findByResearcherIdPrivate = async function (researcherId: number): Promise<IUser | null> {
   return this.findOne({ researcherId: researcherId }).exec();

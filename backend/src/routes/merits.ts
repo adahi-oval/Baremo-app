@@ -106,6 +106,49 @@ meritRouter.get("/merits/load/data", async (req, res) => {
   }
 });
 
+meritRouter.get("/merits/:researcherId/institutes", async (req, res) => {
+  try {
+    const researcherId = parseInt(req.params.researcherId as string);
+    if (isNaN(researcherId)) {
+      return res.status(400).json({ error: "Invalid researcher ID" });
+    }
+
+    const user = await User.findOne({ researcherId });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const institutes = user.institutes;
+    if (!institutes || institutes.length === 0) {
+      return res.status(400).json({ error: "User has no associated institutes" });
+    }
+
+    const parseResult = ResearcherMeritQuerySchema.safeParse(req.query);
+    if (!parseResult.success) {
+      return res.status(400).json({ error: parseResult.error.errors });
+    }
+
+    const { status, year } = parseResult.data;
+
+    const usersInInstitutes = await User.find({ institutes: { $in: institutes } }).select("_id");
+    const userIds = usersInInstitutes.map(u => u._id);
+
+    const meritQuery: any = { user: { $in: userIds } };
+    if (status) meritQuery.complete = status === "complete";
+    if (year) meritQuery.year = parseInt(year);
+
+    const merits = await Publication.find(meritQuery).populate("user", "-password -createdAt -updatedAt -__v -_id");
+
+    if (!merits || merits.length === 0) {
+      return res.status(404).json({ error: "No merits found for this user's institutes" });
+    }
+
+    res.status(200).json({ merits });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
+  }
+});
+
 // POSTS
 
 // POST /merits
